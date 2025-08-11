@@ -15,20 +15,13 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@shared/ui"
-
-import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "../components"
+} from "@shared/ui"
+
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../components"
 
 const PostsManager = () => {
   const navigate = useNavigate()
