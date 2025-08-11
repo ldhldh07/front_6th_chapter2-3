@@ -22,6 +22,7 @@ export const SelectTrigger = forwardRef<ComponentRef<typeof SelectPrimitive.Trig
     </SelectPrimitive.Trigger>
   ),
 )
+
 SelectTrigger.displayName = SelectPrimitive.Trigger.displayName
 
 interface SelectContentProps extends ComponentPropsWithoutRef<typeof SelectPrimitive.Content> {
@@ -42,6 +43,7 @@ export const SelectContent = forwardRef<ComponentRef<typeof SelectPrimitive.Cont
     </SelectPrimitive.Portal>
   ),
 )
+
 SelectContent.displayName = SelectPrimitive.Content.displayName
 
 interface SelectItemProps extends ComponentPropsWithoutRef<typeof SelectPrimitive.Item> {
@@ -64,4 +66,5 @@ export const SelectItem = forwardRef<ComponentRef<typeof SelectPrimitive.Item>, 
     </SelectPrimitive.Item>
   ),
 )
+
 SelectItem.displayName = SelectPrimitive.Item.displayName
