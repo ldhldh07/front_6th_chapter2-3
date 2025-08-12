@@ -1,2 +1,2 @@
-export { PostsTable } from "./posts-table"
-export type { PostsTableProps } from "./posts-table"
+export { PostsTable } from "./posts-table";
+export type { PostsTableProps } from "./posts-table";

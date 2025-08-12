@@ -1,13 +1,13 @@
-import * as SelectPrimitive from "@radix-ui/react-select"
-import { Check, ChevronDown } from "lucide-react"
-import { ComponentPropsWithoutRef, ComponentRef, forwardRef } from "react"
+import * as SelectPrimitive from "@radix-ui/react-select";
+import { Check, ChevronDown } from "lucide-react";
+import { ComponentPropsWithoutRef, ComponentRef, forwardRef } from "react";
 
-export const Select = SelectPrimitive.Root
-export const SelectGroup = SelectPrimitive.Group
-export const SelectValue = SelectPrimitive.Value
+export const Select = SelectPrimitive.Root;
+export const SelectGroup = SelectPrimitive.Group;
+export const SelectValue = SelectPrimitive.Value;
 
 interface SelectTriggerProps extends ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger> {
-  className?: string
+  className?: string;
 }
 
 export const SelectTrigger = forwardRef<ComponentRef<typeof SelectPrimitive.Trigger>, SelectTriggerProps>(
@@ -21,12 +21,12 @@ export const SelectTrigger = forwardRef<ComponentRef<typeof SelectPrimitive.Trig
       <ChevronDown className="h-4 w-4 opacity-50" />
     </SelectPrimitive.Trigger>
   ),
-)
+);
 
-SelectTrigger.displayName = SelectPrimitive.Trigger.displayName
+SelectTrigger.displayName = SelectPrimitive.Trigger.displayName;
 
 interface SelectContentProps extends ComponentPropsWithoutRef<typeof SelectPrimitive.Content> {
-  className?: string
+  className?: string;
 }
 
 export const SelectContent = forwardRef<ComponentRef<typeof SelectPrimitive.Content>, SelectContentProps>(
@@ -42,12 +42,12 @@ export const SelectContent = forwardRef<ComponentRef<typeof SelectPrimitive.Cont
       </SelectPrimitive.Content>
     </SelectPrimitive.Portal>
   ),
-)
+);
 
-SelectContent.displayName = SelectPrimitive.Content.displayName
+SelectContent.displayName = SelectPrimitive.Content.displayName;
 
 interface SelectItemProps extends ComponentPropsWithoutRef<typeof SelectPrimitive.Item> {
-  className?: string
+  className?: string;
 }
 
 export const SelectItem = forwardRef<ComponentRef<typeof SelectPrimitive.Item>, SelectItemProps>(
@@ -65,6 +65,6 @@ export const SelectItem = forwardRef<ComponentRef<typeof SelectPrimitive.Item>, 
       <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
     </SelectPrimitive.Item>
   ),
-)
+);
 
-SelectItem.displayName = SelectPrimitive.Item.displayName
+SelectItem.displayName = SelectPrimitive.Item.displayName;

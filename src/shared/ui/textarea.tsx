@@ -1,7 +1,7 @@
-import { forwardRef, HTMLAttributes } from "react"
+import { forwardRef, HTMLAttributes } from "react";
 
 interface TextareaProps extends HTMLAttributes<HTMLTextAreaElement> {
-  className?: string
+  className?: string;
 }
 
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(({ className, ...props }, ref) => {
@@ -11,7 +11,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(({ classN
       ref={ref}
       {...props}
     />
-  )
-})
+  );
+});
 
-Textarea.displayName = "Textarea"
+Textarea.displayName = "Textarea";

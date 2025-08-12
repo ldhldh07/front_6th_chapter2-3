@@ -1,22 +1,22 @@
-import { Edit2, MessageSquare, ThumbsDown, ThumbsUp, Trash2 } from "lucide-react"
+import { Edit2, MessageSquare, ThumbsDown, ThumbsUp, Trash2 } from "lucide-react";
 
-import type { HighlightSegment } from "@shared/lib/split-by-highlight"
-import { Table, Button, TableCell, TableRow, TableBody, TableHead, TableHeader } from "@shared/ui"
-import {} from "@shared/ui"
-import { HighlightText } from "@shared/ui/highlight-text"
+import type { HighlightSegment } from "@shared/lib/split-by-highlight";
+import { Table, Button, TableCell, TableRow, TableBody, TableHead, TableHeader } from "@shared/ui";
+import {} from "@shared/ui";
+import { HighlightText } from "@shared/ui/highlight-text";
 
-import type { Post } from "../model/types"
+import type { Post } from "../model/types";
 
 type PostRowProps = {
-  post: Post
-  titleSegments: HighlightSegment[]
-  selectedTag?: string
-  onClickTag: (tag: string) => void
-  onOpenUser: (user: Post["author"]) => void
-  onOpenDetail: (post: Post) => void
-  onEdit: (post: Post) => void
-  onDelete: (id: number) => void
-}
+  post: Post;
+  titleSegments: HighlightSegment[];
+  selectedTag?: string;
+  onClickTag: (tag: string) => void;
+  onOpenUser: (user: Post["author"]) => void;
+  onOpenDetail: (post: Post) => void;
+  onEdit: (post: Post) => void;
+  onDelete: (id: number) => void;
+};
 
 export function PostRow({
   post,
@@ -81,18 +81,18 @@ export function PostRow({
         </div>
       </TableCell>
     </TableRow>
-  )
+  );
 }
 
 export interface PostsTableProps {
-  posts: Post[]
-  selectedTag?: string
-  makeTitleSegments: (title: string) => HighlightSegment[]
-  onClickTag: (tag: string) => void
-  onOpenUser: (user: Post["author"]) => void
-  onOpenDetail: (post: Post) => void
-  onEdit: (post: Post) => void
-  onDelete: (id: number) => void
+  posts: Post[];
+  selectedTag?: string;
+  makeTitleSegments: (title: string) => HighlightSegment[];
+  onClickTag: (tag: string) => void;
+  onOpenUser: (user: Post["author"]) => void;
+  onOpenDetail: (post: Post) => void;
+  onEdit: (post: Post) => void;
+  onDelete: (id: number) => void;
 }
 
 export function PostsTable({
@@ -132,5 +132,5 @@ export function PostsTable({
         ))}
       </TableBody>
     </Table>
-  )
+  );
 }

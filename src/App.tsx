@@ -1,8 +1,8 @@
-import { BrowserRouter as Router } from "react-router-dom"
+import { BrowserRouter as Router } from "react-router-dom";
 
-import Footer from "./components/Footer.tsx"
-import Header from "./components/Header.tsx"
-import PostsManagerPage from "./pages/PostsManagerPage.tsx"
+import Footer from "./components/Footer.tsx";
+import Header from "./components/Header.tsx";
+import PostsManagerPage from "./pages/PostsManagerPage.tsx";
 
 const App = () => {
   return (
@@ -15,7 +15,7 @@ const App = () => {
         <Footer />
       </div>
     </Router>
-  )
-}
+  );
+};
 
-export default App
+export default App;

@@ -1,14 +1,14 @@
-import * as DialogPrimitive from "@radix-ui/react-dialog"
-import { X } from "lucide-react"
-import { ComponentPropsWithoutRef, ComponentRef, forwardRef, HTMLAttributes } from "react"
+import * as DialogPrimitive from "@radix-ui/react-dialog";
+import { X } from "lucide-react";
+import { ComponentPropsWithoutRef, ComponentRef, forwardRef, HTMLAttributes } from "react";
 
-export const Dialog = DialogPrimitive.Root
-export const DialogTrigger = DialogPrimitive.Trigger
-export const DialogPortal = DialogPrimitive.Portal
-export const DialogOverlay = DialogPrimitive.Overlay
+export const Dialog = DialogPrimitive.Root;
+export const DialogTrigger = DialogPrimitive.Trigger;
+export const DialogPortal = DialogPrimitive.Portal;
+export const DialogOverlay = DialogPrimitive.Overlay;
 
 interface DialogContentProps extends ComponentPropsWithoutRef<typeof DialogPortal> {
-  className?: string
+  className?: string;
 }
 
 export const DialogContent = forwardRef<ComponentRef<typeof DialogPortal>, DialogContentProps>(
@@ -28,22 +28,22 @@ export const DialogContent = forwardRef<ComponentRef<typeof DialogPortal>, Dialo
       </DialogPrimitive.Content>
     </DialogPortal>
   ),
-)
+);
 
-DialogContent.displayName = DialogPrimitive.Content.displayName
+DialogContent.displayName = DialogPrimitive.Content.displayName;
 
 interface DialogHeaderProps extends HTMLAttributes<HTMLDivElement> {
-  className?: string
+  className?: string;
 }
 
 export const DialogHeader = ({ className, ...props }: DialogHeaderProps) => (
   <div className={`flex flex-col space-y-1.5 text-center sm:text-left ${className}`} {...props} />
-)
+);
 
-DialogHeader.displayName = "DialogHeader"
+DialogHeader.displayName = "DialogHeader";
 
 interface DialogTitleProps extends ComponentPropsWithoutRef<typeof DialogPrimitive.Title> {
-  className?: string
+  className?: string;
 }
 
 export const DialogTitle = forwardRef<ComponentRef<typeof DialogPrimitive.Title>, DialogTitleProps>(
@@ -54,6 +54,6 @@ export const DialogTitle = forwardRef<ComponentRef<typeof DialogPrimitive.Title>
       {...props}
     />
   ),
-)
+);
 
-DialogTitle.displayName = DialogPrimitive.Title.displayName
+DialogTitle.displayName = DialogPrimitive.Title.displayName;

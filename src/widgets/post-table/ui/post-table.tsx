@@ -1,4 +1,4 @@
-import { PostsTable, PostsTableProps } from "@/entities/post"
+import { PostsTable, PostsTableProps } from "@/entities/post";
 
 export function PostsTableWidget({
   posts,
@@ -21,5 +21,5 @@ export function PostsTableWidget({
       onEdit={onEdit}
       onDelete={onDelete}
     />
-  )
+  );
 }

@@ -5,7 +5,7 @@ const Footer = () => {
         <p>&copy; 2023 Post Management System. All rights reserved.</p>
       </div>
     </footer>
-  )
-}
+  );
+};
 
-export default Footer
+export default Footer;
