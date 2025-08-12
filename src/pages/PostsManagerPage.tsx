@@ -27,7 +27,7 @@ import {
   TableRow,
 } from "@shared/ui"
 
-import { usePost } from "@/entities/post/model/usePost"
+import { usePost } from "@/entities/post"
 import { splitByHighlight } from "@/shared/lib/split-by-highlight"
 import { HighlightText } from "@/shared/ui/highlight-text"
 

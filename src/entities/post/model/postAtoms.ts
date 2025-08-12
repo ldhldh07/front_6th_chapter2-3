@@ -1,16 +1,6 @@
 import { atom } from "jotai"
 
-export type User = { id: number; username: string; image?: string }
-
-export type Post = {
-  id: number
-  title: string
-  body?: string
-  userId?: number
-  tags?: string[]
-  reactions?: { likes: number; dislikes: number }
-  author?: User
-}
+import { Post } from "./types"
 
 export const postsAtom = atom<Post[]>([])
 export const totalPostAtom = atom<number>(0)

@@ -1,6 +1,8 @@
 import { useAtomValue, useSetAtom } from "jotai"
 
-import { isPostsLoadingAtom, postsAtom, selectedPostAtom, totalPostAtom, type Post } from "./postAtoms"
+import { isPostsLoadingAtom, postsAtom, selectedPostAtom, totalPostAtom } from "./postAtoms"
+
+import type { Post } from "./types"
 
 export const usePost = () => {
   const posts = useAtomValue(postsAtom)
@@ -15,7 +17,7 @@ export const usePost = () => {
 
   const appendPost = (newPost: Post) => setPosts((prevPosts) => [newPost, ...prevPosts])
   const updatePost = (newPost: Post) =>
-    setPosts((prevPosts) => prevPosts.map((prevPost) => (prevPost.id === prevPost.id ? newPost : prevPost)))
+    setPosts((prevPosts) => prevPosts.map((prevPost) => (prevPost.id === newPost.id ? newPost : prevPost)))
   const removePost = (postId: number) => setPosts((prev) => prev.filter((prevPost) => prevPost.id !== postId))
 
   return {
