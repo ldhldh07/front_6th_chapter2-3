@@ -1,6 +1,6 @@
 import { useAtomValue, useSetAtom } from "jotai"
 
-import { isPostsLoadingAtom, postsAtom, selectedPostAtom, totalPostAtom } from "./postAtoms"
+import { isPostsLoadingAtom, postsAtom, selectedPostAtom, totalPostAtom } from "./post-atoms"
 
 import type { Post } from "./types"
 

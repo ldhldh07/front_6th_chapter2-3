@@ -1,1 +1,1 @@
-export { PostsTableWidget } from "./ui/PostTable"
+export { PostsTableWidget } from "./ui/post-table"
