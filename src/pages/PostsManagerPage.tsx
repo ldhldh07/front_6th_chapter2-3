@@ -27,7 +27,7 @@ import {
   TableRow,
 } from "@shared/ui"
 
-import { usePost } from "@/entities/post"
+import { getPostsWithAuthors, usePost } from "@/entities/post"
 import { splitByHighlight } from "@/shared/lib/split-by-highlight"
 import { HighlightText } from "@/shared/ui/highlight-text"
 import { PostsTableWidget } from "@/widgets/post-table/ui/PostTable"
@@ -70,34 +70,17 @@ const PostsManager = () => {
     navigate(`?${params.toString()}`)
   }
 
-  // 게시물 가져오기
-  const fetchPosts = () => {
+  const fetchPosts = async () => {
     setIsLoading(true)
-    let postsData
-    let usersData
-
-    fetch(`/api/posts?limit=${limit}&skip=${skip}`)
-      .then((response) => response.json())
-      .then((data) => {
-        postsData = data
-        return fetch("/api/users?limit=0&select=username,image")
-      })
-      .then((response) => response.json())
-      .then((users) => {
-        usersData = users.users
-        const postsWithUsers = postsData.posts.map((post) => ({
-          ...post,
-          author: usersData.find((user) => user.id === post.userId),
-        }))
-        setPosts(postsWithUsers)
-        setTotal(postsData.total)
-      })
-      .catch((error) => {
-        console.error("게시물 가져오기 오류:", error)
-      })
-      .finally(() => {
-        setIsLoading(false)
-      })
+    try {
+      const { posts, total } = await getPostsWithAuthors({ limit, skip })
+      setPosts(posts)
+      setTotal(total)
+    } catch (error) {
+      console.error("게시물 가져오기 오류:", error)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   // 태그 가져오기
