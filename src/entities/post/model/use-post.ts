@@ -1,19 +1,14 @@
-import { useAtomValue, useSetAtom } from "jotai";
+import { useAtom } from "jotai";
 
 import { isPostsLoadingAtom, postsAtom, selectedPostAtom, totalPostAtom } from "./post-atoms";
 
 import type { Post } from "./types";
 
 export const usePost = () => {
-  const posts = useAtomValue(postsAtom);
-  const total = useAtomValue(totalPostAtom);
-  const isLoading = useAtomValue(isPostsLoadingAtom);
-  const selectedPost = useAtomValue(selectedPostAtom);
-
-  const setPosts = useSetAtom(postsAtom);
-  const setTotal = useSetAtom(totalPostAtom);
-  const setIsLoading = useSetAtom(isPostsLoadingAtom);
-  const setSelectedPost = useSetAtom(selectedPostAtom);
+  const [posts, setPosts] = useAtom(postsAtom);
+  const [total, setTotal] = useAtom(totalPostAtom);
+  const [isLoading, setIsLoading] = useAtom(isPostsLoadingAtom);
+  const [selectedPost, setSelectedPost] = useAtom(selectedPostAtom);
 
   const appendPost = (newPost: Post) => setPosts((prevPosts) => [newPost, ...prevPosts]);
   const updatePost = (newPost: Post) =>
