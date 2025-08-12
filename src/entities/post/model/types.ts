@@ -9,3 +9,5 @@ export type Post = {
   reactions?: { likes: number; dislikes: number };
   author?: User;
 };
+
+export type Tag = { slug: string; url?: string };

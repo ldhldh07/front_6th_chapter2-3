@@ -33,23 +33,35 @@ import { getPostsWithAuthors, usePost } from "@entities/post";
 
 import { PostsTableWidget } from "@widgets/post-table";
 
+import { usePostFilter } from "@/features/post-fllter/model/use-post-filter";
+
 const PostsManager = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const { posts, total, isLoading, selectedPost, setPosts, setTotal, setIsLoading, setSelectedPost } = usePost();
+  const {
+    skip,
+    limit,
+    searchQuery,
+    sortBy,
+    sortOrder,
+    selectedTag,
 
-  // 상태 관리
-  // const [skip, setSkip] = useState(parseInt(queryParams.get("skip") || "0"))
-  const [limit, setLimit] = useState(parseInt(queryParams.get("limit") || "10"));
-  const [searchQuery, setSearchQuery] = useState(queryParams.get("search") || "");
-  const [sortBy, setSortBy] = useState(queryParams.get("sortBy") || "");
-  const [sortOrder, setSortOrder] = useState(queryParams.get("sortOrder") || "asc");
+    setSkip,
+    setLimit,
+    setSearchQuery,
+    setSortBy,
+    setSortOrder,
+    setSelectedTag,
+
+    updateURL,
+  } = usePostFilter();
+
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [newPost, setNewPost] = useState({ title: "", body: "", userId: 1 });
   const [tags, setTags] = useState([]);
-  const [selectedTag, setSelectedTag] = useState(queryParams.get("tag") || "");
   const [comments, setComments] = useState({});
   const [selectedComment, setSelectedComment] = useState(null);
   const [newComment, setNewComment] = useState({ body: "", postId: null, userId: 1 });
@@ -58,18 +70,6 @@ const PostsManager = () => {
   const [showPostDetailDialog, setShowPostDetailDialog] = useState(false);
   const [showUserModal, setShowUserModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
-
-  // URL 업데이트 함수
-  const updateURL = () => {
-    const params = new URLSearchParams();
-    if (skip) params.set("skip", skip.toString());
-    if (limit) params.set("limit", limit.toString());
-    if (searchQuery) params.set("search", searchQuery);
-    if (sortBy) params.set("sortBy", sortBy);
-    if (sortOrder) params.set("sortOrder", sortOrder);
-    if (selectedTag) params.set("tag", selectedTag);
-    navigate(`?${params.toString()}`);
-  };
 
   const fetchPosts = async () => {
     setIsLoading(true);
@@ -303,16 +303,6 @@ const PostsManager = () => {
     }
     updateURL();
   }, [skip, limit, sortBy, sortOrder, selectedTag]);
-
-  useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    setSkip(parseInt(params.get("skip") || "0"));
-    setLimit(parseInt(params.get("limit") || "10"));
-    setSearchQuery(params.get("search") || "");
-    setSortBy(params.get("sortBy") || "");
-    setSortOrder(params.get("sortOrder") || "asc");
-    setSelectedTag(params.get("tag") || "");
-  }, [location.search]);
 
   // 게시물 테이블 렌더링
   const renderPostTable = () => (
