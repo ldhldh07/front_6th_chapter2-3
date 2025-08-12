@@ -11,7 +11,7 @@ export const usePost = () => {
   const [selectedPost, setSelectedPost] = useAtom(selectedPostAtom);
 
   const appendPost = (newPost: Post) => setPosts((prevPosts) => [newPost, ...prevPosts]);
-  const updatePost = (newPost: Post) =>
+  const changePost = (newPost: Post) =>
     setPosts((prevPosts) => prevPosts.map((prevPost) => (prevPost.id === newPost.id ? newPost : prevPost)));
   const removePost = (postId: number) => setPosts((prev) => prev.filter((prevPost) => prevPost.id !== postId));
 
@@ -25,7 +25,7 @@ export const usePost = () => {
     setIsLoading,
     setSelectedPost,
     appendPost,
-    updatePost,
+    changePost,
     removePost,
   };
 };

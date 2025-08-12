@@ -24,6 +24,8 @@ import { HighlightText } from "@shared/ui/highlight-text";
 
 import { getPostsWithAuthors, usePost } from "@entities/post";
 
+import { usePostEditor } from "@features/post-editor";
+
 import { PostsTableWidget } from "@widgets/post-table";
 
 import { usePostFilter } from "@/features/post-fllter/model/use-post-filter";
@@ -47,6 +49,7 @@ const PostsManager = () => {
 
     updateURL,
   } = usePostFilter();
+  const { addPost, updatePost, deletePost } = usePostEditor();
 
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
@@ -131,16 +134,9 @@ const PostsManager = () => {
     setIsLoading(false);
   };
 
-  // 게시물 추가
-  const addPost = async () => {
+  const handleAddPost = async () => {
     try {
-      const response = await fetch("/api/posts/add", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newPost),
-      });
-      const data = await response.json();
-      setPosts([data, ...posts]);
+      await addPost(newPost);
       setShowAddDialog(false);
       setNewPost({ title: "", body: "", userId: 1 });
     } catch (error) {
@@ -149,30 +145,16 @@ const PostsManager = () => {
   };
 
   // 게시물 업데이트
-  const updatePost = async () => {
+  const handleUpdatePost = async () => {
+    if (!selectedPost) return;
     try {
-      const response = await fetch(`/api/posts/${selectedPost.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(selectedPost),
+      await updatePost({
+        postId: String(selectedPost.id),
+        params: { title: selectedPost.title ?? "", body: selectedPost.body ?? "" },
       });
-      const data = await response.json();
-      setPosts(posts.map((post) => (post.id === data.id ? data : post)));
       setShowEditDialog(false);
     } catch (error) {
       console.error("게시물 업데이트 오류:", error);
-    }
-  };
-
-  // 게시물 삭제
-  const deletePost = async (id) => {
-    try {
-      await fetch(`/api/posts/${id}`, {
-        method: "DELETE",
-      });
-      setPosts(posts.filter((post) => post.id !== id));
-    } catch (error) {
-      console.error("게시물 삭제 오류:", error);
     }
   };
 
@@ -487,7 +469,7 @@ const PostsManager = () => {
               value={newPost.userId}
               onChange={(e) => setNewPost({ ...newPost, userId: Number(e.target.value) })}
             />
-            <Button onClick={addPost}>게시물 추가</Button>
+            <Button onClick={handleAddPost}>게시물 추가</Button>
           </div>
         </DialogContent>
       </Dialog>
@@ -510,7 +492,7 @@ const PostsManager = () => {
               value={selectedPost?.body || ""}
               onChange={(e) => setSelectedPost({ ...selectedPost, body: e.target.value })}
             />
-            <Button onClick={updatePost}>게시물 업데이트</Button>
+            <Button onClick={handleUpdatePost}>게시물 업데이트</Button>
           </div>
         </DialogContent>
       </Dialog>
