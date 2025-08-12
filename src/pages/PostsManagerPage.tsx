@@ -30,6 +30,7 @@ import {
 import { usePost } from "@/entities/post"
 import { splitByHighlight } from "@/shared/lib/split-by-highlight"
 import { HighlightText } from "@/shared/ui/highlight-text"
+import { PostsTableWidget } from "@/widgets/post-table/ui/PostTable"
 
 const PostsManager = () => {
   const navigate = useNavigate()
@@ -530,7 +531,26 @@ const PostsManager = () => {
           </div>
 
           {/* 게시물 테이블 */}
-          {isLoading ? <div className="flex justify-center p-4">로딩 중...</div> : renderPostTable()}
+          {isLoading ? (
+            <div className="flex justify-center p-4">로딩 중...</div>
+          ) : (
+            <PostsTableWidget
+              posts={posts}
+              selectedTag={selectedTag}
+              makeTitleSegments={(title) => splitByHighlight(title, searchQuery)}
+              onClickTag={(tag) => {
+                setSelectedTag(tag)
+                updateURL()
+              }}
+              onOpenUser={openUserModal}
+              onOpenDetail={openPostDetail}
+              onEdit={(p) => {
+                setSelectedPost(p)
+                setShowEditDialog(true)
+              }}
+              onDelete={deletePost}
+            />
+          )}
 
           {/* 페이지네이션 */}
           <div className="flex justify-between items-center">

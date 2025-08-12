@@ -84,7 +84,7 @@ export function PostRow({
   )
 }
 
-type PostsTableProps = {
+export interface PostsTableProps {
   posts: Post[]
   selectedTag?: string
   makeTitleSegments: (title: string) => HighlightSegment[]
@@ -104,7 +104,7 @@ export function PostsTable({
   onOpenDetail,
   onEdit,
   onDelete,
-}: PostsTableProps) {
+}: Readonly<PostsTableProps>) {
   return (
     <Table>
       <TableHeader>
