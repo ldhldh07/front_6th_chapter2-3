@@ -2,6 +2,7 @@ import { Edit2, MessageSquare, Plus, Search, ThumbsDown, ThumbsUp, Trash2 } from
 import { useEffect, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 
+import { splitByHighlight } from "@shared/lib/split-by-highlight"
 import {
   Button,
   Input,
@@ -26,11 +27,11 @@ import {
   TableHeader,
   TableRow,
 } from "@shared/ui"
+import { HighlightText } from "@shared/ui/highlight-text"
 
-import { getPostsWithAuthors, usePost } from "@/entities/post"
-import { splitByHighlight } from "@/shared/lib/split-by-highlight"
-import { HighlightText } from "@/shared/ui/highlight-text"
-import { PostsTableWidget } from "@/widgets/post-table/ui/PostTable"
+import { getPostsWithAuthors, usePost } from "@entities/post"
+
+import { PostsTableWidget } from "@widgets/post-table"
 
 const PostsManager = () => {
   const navigate = useNavigate()

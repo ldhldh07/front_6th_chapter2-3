@@ -1,4 +1,5 @@
 import { User } from "@/entities/user"
+import { http } from "@/shared/api/client"
 
 import { Post } from "../model/types"
 
@@ -12,20 +13,20 @@ export interface PostsResponse {
   total: number
 }
 
-export const getPosts = async ({ limit, skip }: PostsParams): Promise<PostsResponse> => {
-  const response = await fetch(`/api/posts?limit=${limit}&skip=${skip}`)
-  if (!response.ok) throw new Error()
-  return response.json()
+export const getPosts = ({ limit, skip }: PostsParams): Promise<PostsResponse> => {
+  return http.get<PostsResponse>("/posts", { params: { limit, skip } })
 }
 
-export interface getUserNameImageByUserIdParams {
-  userId: number
+type UserLite = Pick<User, "id" | "username" | "image">
+
+interface getUserLiteResponse {
+  users: UserLite[]
 }
 
-export async function getUsersData(): Promise<Pick<User, "id" | "username" | "image">[]> {
-  const response = await fetch("/api/users?limit=0&select=username,image")
-  if (!response.ok) throw new Error()
-  const data = await response.json()
+export async function getUsersData(): Promise<UserLite[]> {
+  const data = await http.get<getUserLiteResponse>("/users", {
+    params: { limit: 0, select: ["username", "image"] },
+  })
   return data.users
 }
 
