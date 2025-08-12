@@ -27,6 +27,7 @@ import {
   TableRow,
 } from "@shared/ui"
 
+import { usePost } from "@/entities/post/model/usePost"
 import { splitByHighlight } from "@/shared/lib/split-by-highlight"
 import { HighlightText } from "@/shared/ui/highlight-text"
 
@@ -34,20 +35,17 @@ const PostsManager = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const queryParams = new URLSearchParams(location.search)
+  const { posts, total, isLoading, selectedPost, setPosts, setTotal, setIsLoading, setSelectedPost } = usePost()
 
   // 상태 관리
-  const [posts, setPosts] = useState([])
-  const [total, setTotal] = useState(0)
   const [skip, setSkip] = useState(parseInt(queryParams.get("skip") || "0"))
   const [limit, setLimit] = useState(parseInt(queryParams.get("limit") || "10"))
   const [searchQuery, setSearchQuery] = useState(queryParams.get("search") || "")
-  const [selectedPost, setSelectedPost] = useState(null)
   const [sortBy, setSortBy] = useState(queryParams.get("sortBy") || "")
   const [sortOrder, setSortOrder] = useState(queryParams.get("sortOrder") || "asc")
   const [showAddDialog, setShowAddDialog] = useState(false)
   const [showEditDialog, setShowEditDialog] = useState(false)
   const [newPost, setNewPost] = useState({ title: "", body: "", userId: 1 })
-  const [loading, setLoading] = useState(false)
   const [tags, setTags] = useState([])
   const [selectedTag, setSelectedTag] = useState(queryParams.get("tag") || "")
   const [comments, setComments] = useState({})
@@ -73,7 +71,7 @@ const PostsManager = () => {
 
   // 게시물 가져오기
   const fetchPosts = () => {
-    setLoading(true)
+    setIsLoading(true)
     let postsData
     let usersData
 
@@ -97,7 +95,7 @@ const PostsManager = () => {
         console.error("게시물 가져오기 오류:", error)
       })
       .finally(() => {
-        setLoading(false)
+        setIsLoading(false)
       })
   }
 
@@ -118,7 +116,7 @@ const PostsManager = () => {
       fetchPosts()
       return
     }
-    setLoading(true)
+    setIsLoading(true)
     try {
       const response = await fetch(`/api/posts/search?q=${searchQuery}`)
       const data = await response.json()
@@ -127,7 +125,7 @@ const PostsManager = () => {
     } catch (error) {
       console.error("게시물 검색 오류:", error)
     }
-    setLoading(false)
+    setIsLoading(false)
   }
 
   // 태그별 게시물 가져오기
@@ -136,7 +134,7 @@ const PostsManager = () => {
       fetchPosts()
       return
     }
-    setLoading(true)
+    setIsLoading(true)
     try {
       const [postsResponse, usersResponse] = await Promise.all([
         fetch(`/api/posts/tag/${tag}`),
@@ -155,7 +153,7 @@ const PostsManager = () => {
     } catch (error) {
       console.error("태그별 게시물 가져오기 오류:", error)
     }
-    setLoading(false)
+    setIsLoading(false)
   }
 
   // 게시물 추가
@@ -532,7 +530,7 @@ const PostsManager = () => {
           </div>
 
           {/* 게시물 테이블 */}
-          {loading ? <div className="flex justify-center p-4">로딩 중...</div> : renderPostTable()}
+          {isLoading ? <div className="flex justify-center p-4">로딩 중...</div> : renderPostTable()}
 
           {/* 페이지네이션 */}
           <div className="flex justify-between items-center">
