@@ -26,6 +26,7 @@ import { getPostsWithAuthors, usePost } from "@entities/post";
 
 import { PostsTableWidget } from "@widgets/post-table";
 
+import { useComments } from "@/entities/comment/model/comment.hook";
 import { usePostEditor } from "@/features/edit-post";
 import { usePostFilter } from "@/features/filter-post/model/filter-post.hook";
 
@@ -48,14 +49,13 @@ const PostsManager = () => {
 
     updateURL,
   } = usePostFilter();
+  const { comments, setComments, selectedComment, setSelectedComment } = useComments();
   const { addPost, updatePost, deletePost } = usePostEditor();
 
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [newPost, setNewPost] = useState({ title: "", body: "", userId: 1 });
   const [tags, setTags] = useState([]);
-  const [comments, setComments] = useState({});
-  const [selectedComment, setSelectedComment] = useState(null);
   const [newComment, setNewComment] = useState({ body: "", postId: null, userId: 1 });
   const [showAddCommentDialog, setShowAddCommentDialog] = useState(false);
   const [showEditCommentDialog, setShowEditCommentDialog] = useState(false);
