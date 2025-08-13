@@ -1,7 +1,8 @@
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import { useState } from "react";
 
 import { commentApi, CreateCommentPayload, UpdateCommentPayload, useComments } from "@/entities/comment";
+import { currentUserIdAtom } from "@/entities/user";
 
 import { isAddCommentDialogOpenAtom, isEditCommentDialogOpenAtom, newCommentAtom } from "./edit-comment.atoms";
 
@@ -11,6 +12,7 @@ export function useCommentEditor() {
   const [draft, setDraft] = useAtom(newCommentAtom);
   const [isAddOpen, setIsAddOpen] = useAtom(isAddCommentDialogOpenAtom);
   const [isEditOpen, setIsEditOpen] = useAtom(isEditCommentDialogOpenAtom);
+  const currentUserId = useAtomValue(currentUserIdAtom);
 
   const addComment = async (payload: CreateCommentPayload) => {
     setIsSubmitting(true);
@@ -58,7 +60,7 @@ export function useCommentEditor() {
   };
 
   const prepareNewComment = (postId: number, userId?: number) => {
-    setDraft((prev) => ({ ...prev, postId, userId: userId ?? prev.userId }));
+    setDraft((prev) => ({ ...prev, postId, userId: userId ?? currentUserId ?? prev.userId }));
     setIsAddOpen(true);
   };
 

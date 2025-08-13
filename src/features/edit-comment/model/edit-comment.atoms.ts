@@ -6,7 +6,7 @@ export interface NewCommentDraft {
   userId: number | null;
 }
 
-const defaultCommentDraft = { body: "", postId: null, userId: 1 };
+const defaultCommentDraft = { body: "", postId: null, userId: null };
 
 export const newCommentAtom = atom<NewCommentDraft>(defaultCommentDraft);
 
