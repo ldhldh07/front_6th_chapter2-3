@@ -24,11 +24,10 @@ import { HighlightText } from "@shared/ui/highlight-text";
 
 import { getPostsWithAuthors, usePost } from "@entities/post";
 
-import { usePostEditor } from "@features/post-editor";
-
 import { PostsTableWidget } from "@widgets/post-table";
 
-import { usePostFilter } from "@/features/post-fllter/model/use-post-filter";
+import { usePostEditor } from "@/features/edit-post";
+import { usePostFilter } from "@/features/filter-post/model/filter-post.hook";
 
 const PostsManager = () => {
   const { posts, total, isLoading, selectedPost, setPosts, setTotal, setIsLoading, setSelectedPost } = usePost();
@@ -164,6 +163,7 @@ const PostsManager = () => {
     try {
       const response = await fetch(`/api/comments/post/${postId}`);
       const data = await response.json();
+      console.log(data.comments);
       setComments((prev) => ({ ...prev, [postId]: data.comments }));
     } catch (error) {
       console.error("댓글 가져오기 오류:", error);

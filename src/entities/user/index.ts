@@ -1,2 +1,2 @@
-export type { User } from "./model/types";
-export { getUsersData } from "./api/users.api";
+export type { User } from "./model/user.types";
+export { getUsersData } from "./api/user.api";

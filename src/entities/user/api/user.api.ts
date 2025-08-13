@@ -1,6 +1,6 @@
 import { http } from "@/shared/api/client";
 
-import { User } from "../model/types";
+import { User } from "../model/user.types";
 
 type UserLite = Pick<User, "id" | "username" | "image">;
 

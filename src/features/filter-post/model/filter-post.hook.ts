@@ -12,7 +12,7 @@ import {
   sortByAtom,
   SortOrder,
   sortOrderAtom,
-} from "./filter-atoms";
+} from "./filter-post.atoms";
 
 export const usePostFilter = () => {
   const location = useLocation();

@@ -1,8 +1,8 @@
 import { useAtom } from "jotai";
 
-import { isPostsLoadingAtom, postsAtom, selectedPostAtom, totalPostAtom } from "./post-atoms";
+import { isPostsLoadingAtom, postsAtom, selectedPostAtom, totalPostAtom } from "./post.atom";
 
-import type { Post } from "./types";
+import type { Post } from "./post.types";
 
 export const usePost = () => {
   const [posts, setPosts] = useAtom(postsAtom);

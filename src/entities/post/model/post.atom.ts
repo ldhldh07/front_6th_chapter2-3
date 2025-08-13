@@ -1,6 +1,6 @@
 import { atom } from "jotai";
 
-import { Post } from "./types";
+import { Post } from "./post.types";
 
 export const postsAtom = atom<Post[]>([]);
 export const totalPostAtom = atom<number>(0);

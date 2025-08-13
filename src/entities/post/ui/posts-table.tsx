@@ -5,7 +5,7 @@ import { Table, Button, TableCell, TableRow, TableBody, TableHead, TableHeader }
 import {} from "@shared/ui";
 import { HighlightText } from "@shared/ui/highlight-text";
 
-import type { Post } from "../model/types";
+import type { Post } from "../model/post.types";
 
 type PostRowProps = {
   post: Post;

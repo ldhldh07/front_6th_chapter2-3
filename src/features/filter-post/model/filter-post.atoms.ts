@@ -1,6 +1,6 @@
 import { atom } from "jotai";
 
-import { Tag } from "@/entities/post/model/types";
+import { Tag } from "@/entities/post/model/post.types";
 
 export type SortBy = "none" | "id" | "title" | "reactions";
 export type SortOrder = "asc" | "desc";

@@ -1,5 +1,5 @@
-export type { Post } from "./model/types";
-export { usePost } from "./model/use-post";
-export { PostsTable } from "./ui";
-export type { PostsTableProps } from "./ui";
+export type { Post } from "./model/post.types";
+export { usePost } from "./model/post.hook";
+export { PostsTable } from "./ui/posts-table";
+export type { PostsTableProps } from "./ui/posts-table";
 export { getPostsWithAuthors } from "./api/posts.api";

@@ -1,7 +1,7 @@
 import { getUsersData } from "@/entities/user";
 import { http } from "@/shared/api/client";
 
-import { Post } from "../model/types";
+import { Post } from "../model/post.types";
 
 export interface PostsParams {
   limit: number;
