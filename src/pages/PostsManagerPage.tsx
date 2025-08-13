@@ -26,7 +26,7 @@ import { getPostsWithAuthors, usePost } from "@entities/post";
 
 import { PostsTableWidget } from "@widgets/post-table";
 
-import { getCommentsByPostId } from "@/entities/comment/api/comments.api";
+import { commentApi } from "@/entities/comment";
 import { useComments } from "@/entities/comment/model/comment.hook";
 import { usePostEditor } from "@/features/edit-post";
 import { usePostFilter } from "@/features/filter-post/model/filter-post.hook";
@@ -161,7 +161,7 @@ const PostsManager = () => {
   const fetchComments = async (postId: number) => {
     if (comments[postId]) return;
     try {
-      const { comments } = await getCommentsByPostId(postId);
+      const { comments } = await commentApi.get(postId);
       setComments((prev) => ({ ...prev, [postId]: comments }));
     } catch (error) {
       console.error("댓글 가져오기 오류:", error);
