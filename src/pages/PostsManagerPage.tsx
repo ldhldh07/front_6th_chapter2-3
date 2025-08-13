@@ -26,6 +26,7 @@ import { getPostsWithAuthors, usePost } from "@entities/post";
 
 import { PostsTableWidget } from "@widgets/post-table";
 
+import { getCommentsByPostId } from "@/entities/comment/api/comments.api";
 import { useComments } from "@/entities/comment/model/comment.hook";
 import { usePostEditor } from "@/features/edit-post";
 import { usePostFilter } from "@/features/filter-post/model/filter-post.hook";
@@ -157,14 +158,11 @@ const PostsManager = () => {
     }
   };
 
-  // 댓글 가져오기
-  const fetchComments = async (postId) => {
-    if (comments[postId]) return; // 이미 불러온 댓글이 있으면 다시 불러오지 않음
+  const fetchComments = async (postId: number) => {
+    if (comments[postId]) return;
     try {
-      const response = await fetch(`/api/comments/post/${postId}`);
-      const data = await response.json();
-      console.log(data.comments);
-      setComments((prev) => ({ ...prev, [postId]: data.comments }));
+      const { comments } = await getCommentsByPostId(postId);
+      setComments((prev) => ({ ...prev, [postId]: comments }));
     } catch (error) {
       console.error("댓글 가져오기 오류:", error);
     }
