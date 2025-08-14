@@ -11,5 +11,7 @@ export { PostAddDialog } from "./ui/post-add-dialog";
 
 export { PostEditDialog } from "./ui/post-edit-dialog";
 
+export { PostDetailDialog } from "./ui/post-detail-dialog";
+
 export { PostsTable } from "./ui/posts-table";
 export type { PostsTableProps } from "./ui/posts-table";
