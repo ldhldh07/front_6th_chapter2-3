@@ -1,9 +1,8 @@
-import { Plus, Search } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useEffect } from "react";
 
 import {
   Button,
-  Input,
   Card,
   CardContent,
   CardHeader,
@@ -20,6 +19,7 @@ import { postApi, PostDetailDialog, usePosts } from "@entities/post";
 import { CommentAddDialogContainer, CommentEditDialogContainer } from "@/features/comment-edit";
 import { PostAddDialogContainer, PostEditDialogContainer, useNewPostForm } from "@/features/post-edit";
 import { usePostFilter } from "@/features/post-filter";
+import { PostFilterContainer } from "@/features/post-filter/ui/post-filter-container";
 import { getPostsByTagWithAuthors, PostsTableContainer, getPostsWithAuthors } from "@/features/post-load";
 import { UserDetailDialogContainer } from "@/features/user-load";
 
@@ -41,14 +41,9 @@ const PostsManager = () => {
     sortBy,
     sortOrder,
     selectedTag,
-    tags,
 
     setSkip,
     setLimit,
-    setSearchQuery,
-    setSortBy,
-    setSortOrder,
-    setSelectedTag,
     setTags,
 
     updateURL,
@@ -76,23 +71,6 @@ const PostsManager = () => {
     } catch (error) {
       console.error("태그 가져오기 오류:", error);
     }
-  };
-
-  // 게시물 검색
-  const searchPosts = async () => {
-    if (!searchQuery) {
-      fetchPosts();
-      return;
-    }
-    setIsLoading(true);
-    try {
-      const { posts, total } = await postApi.search(searchQuery);
-      setPosts(posts);
-      setTotal(total);
-    } catch (error) {
-      console.error("게시물 검색 오류:", error);
-    }
-    setIsLoading(false);
   };
 
   // 태그별 게시물 가져오기
@@ -138,60 +116,7 @@ const PostsManager = () => {
       <CardContent>
         <div className="flex flex-col gap-4">
           {/* 검색 및 필터 컨트롤 */}
-          <div className="flex gap-4">
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="게시물 검색..."
-                  className="pl-8"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyPress={(e) => e.key === "Enter" && searchPosts()}
-                />
-              </div>
-            </div>
-            <Select
-              value={selectedTag}
-              onValueChange={(value) => {
-                setSelectedTag(value);
-                fetchPostsByTag(value);
-                updateURL();
-              }}
-            >
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="태그 선택" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">모든 태그</SelectItem>
-                {tags.map((tag) => (
-                  <SelectItem key={tag.url} value={tag.slug}>
-                    {tag.slug}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select value={sortBy} onValueChange={(v) => setSortBy(v as "none" | "id" | "title" | "reactions")}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="정렬 기준" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="none">없음</SelectItem>
-                <SelectItem value="id">ID</SelectItem>
-                <SelectItem value="title">제목</SelectItem>
-                <SelectItem value="reactions">반응</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={sortOrder} onValueChange={(v) => setSortOrder(v as "asc" | "desc")}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="정렬 순서" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="asc">오름차순</SelectItem>
-                <SelectItem value="desc">내림차순</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <PostFilterContainer />
 
           {/* 게시물 테이블 */}
           {isLoading ? <div className="flex justify-center p-4">로딩 중...</div> : <PostsTableContainer />}
