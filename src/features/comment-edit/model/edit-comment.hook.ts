@@ -1,8 +1,16 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { useAtom } from "jotai";
 import { useState } from "react";
 
-import { commentApi, useComments } from "@/entities/comment";
-import type { CreateCommentPayload, UpdateCommentPayload } from "@/entities/comment";
+import {
+  useCreateCommentMutation,
+  useUpdateCommentMutation,
+  useDeleteCommentMutation,
+  useLikeCommentMutation,
+  useComments,
+} from "@/entities/comment";
+import type { CreateCommentPayload, UpdateCommentPayload, Comment } from "@/entities/comment";
+import { commentQueryKeys } from "@/entities/comment/model/comment.keys";
 
 import {
   isAddCommentDialogOpenAtom,
@@ -12,17 +20,21 @@ import {
 } from "./edit-comment.atoms";
 
 export function useCommentEditor() {
-  const { appendComment, changeComment, removeComment, comments } = useComments();
+  const queryClient = useQueryClient();
+  const createMutation = useCreateCommentMutation();
+  const deleteMutation = useDeleteCommentMutation();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [newComment, setNewComment] = useAtom(newCommentAtom);
   const [isAddOpen, setIsAddOpen] = useAtom(isAddCommentDialogOpenAtom);
   const [isEditOpen, setIsEditOpen] = useAtom(isEditCommentDialogOpenAtom);
+  const updateMutation = useUpdateCommentMutation();
+  const likeMutation = useLikeCommentMutation();
+  const { selectedComment } = useComments();
 
   const addComment = async (payload: CreateCommentPayload) => {
     setIsSubmitting(true);
     try {
-      const created = await commentApi.create(payload);
-      appendComment(created);
+      await createMutation.mutateAsync(payload);
       setNewComment({ body: "", postId: null, userId: newComment.userId });
       setIsAddOpen(false);
     } finally {
@@ -33,8 +45,8 @@ export function useCommentEditor() {
   const updateComment = async (payload: UpdateCommentPayload) => {
     setIsSubmitting(true);
     try {
-      const updated = await commentApi.update(payload);
-      changeComment(updated);
+      const postId = selectedComment?.postId ?? 0;
+      await updateMutation.mutateAsync({ postId, id: payload.id, body: payload.body });
       setIsEditOpen(false);
     } finally {
       setIsSubmitting(false);
@@ -44,8 +56,7 @@ export function useCommentEditor() {
   const deleteComment = async (id: number, postId: number) => {
     setIsSubmitting(true);
     try {
-      await commentApi.remove(id);
-      removeComment(id, postId);
+      await deleteMutation.mutateAsync({ id, postId });
       setIsEditOpen(false);
     } finally {
       setIsSubmitting(false);
@@ -53,11 +64,11 @@ export function useCommentEditor() {
   };
 
   const likeComment = async (id: number, postId: number) => {
-    const currentLikes = comments[postId]?.find((comment) => comment.id === id)?.likes ?? 0;
+    const list = queryClient.getQueryData<Comment[]>(commentQueryKeys.byPost(postId)) ?? [];
+    const currentLikes = list.find((c) => c.id === id)?.likes ?? 0;
     setIsSubmitting(true);
     try {
-      const updated = await commentApi.like({ id, likes: currentLikes + 1 });
-      changeComment(updated);
+      await likeMutation.mutateAsync({ id, postId, likes: currentLikes + 1 });
     } finally {
       setIsSubmitting(false);
     }

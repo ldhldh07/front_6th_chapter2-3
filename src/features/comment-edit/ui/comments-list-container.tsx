@@ -1,9 +1,10 @@
+import { useAtom } from "jotai";
 import { Plus } from "lucide-react";
 import { useCallback } from "react";
 
-import { CommentList } from "@/entities/comment";
-import { useComments } from "@/entities/comment";
+import { CommentList, useCommentsQuery } from "@/entities/comment";
 import type { Comment } from "@/entities/comment";
+import { selectedCommentAtom } from "@/entities/comment/model/comment.atom";
 import { Button } from "@/shared/ui/button";
 
 import { useEditCommentDialog } from "../index";
@@ -15,7 +16,8 @@ interface CommentsListContainerProps {
 }
 
 export function CommentsListContainer({ postId, searchQuery }: Readonly<CommentsListContainerProps>) {
-  const { comments, setSelectedComment } = useComments();
+  const { data: comments = [] } = useCommentsQuery(postId);
+  const [, setSelectedComment] = useAtom(selectedCommentAtom);
   const { setIsEditOpen } = useEditCommentDialog();
   const { deleteComment, likeComment, prepareNewComment } = useCommentEditor();
 
@@ -39,7 +41,7 @@ export function CommentsListContainer({ postId, searchQuery }: Readonly<Comments
         </Button>
       </div>
       <CommentList
-        comments={comments[postId]}
+        comments={comments}
         searchQuery={searchQuery}
         onLike={(id) => likeComment(id, postId)}
         onEdit={handleEditComment}

@@ -6,6 +6,13 @@ export type {
   LikeCommentPayload,
 } from "./api/comments.api";
 
+export {
+  useCommentsQuery,
+  useCreateCommentMutation,
+  useUpdateCommentMutation,
+  useDeleteCommentMutation,
+  useLikeCommentMutation,
+} from "./model/comment.query";
 export { useComments } from "./model/comment.hook";
 
 export type { CommentUser, Comment, CommentsByPostId } from "./model/comment.types";

@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { postApi } from "@/entities/post";
-import { postsQueryKeys } from "@/entities/post/model/post.query-keys";
+import { postsQueryKeys } from "@/entities/post/model/post.keys";
 
 export function useTagsQuery() {
   return useQuery({

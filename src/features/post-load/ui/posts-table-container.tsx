@@ -1,6 +1,7 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 
-import { useComments, commentApi } from "@/entities/comment";
+import { prefetchCommentsByPost } from "@/entities/comment/model/comment.query";
 import { PostsTable, usePosts } from "@/entities/post";
 import type { Post } from "@/entities/post";
 import { useEditPostDialog, usePostEditor } from "@/features/post-edit";
@@ -24,7 +25,7 @@ export function PostsTableContainer() {
   const { openById } = useUserDetailModal();
   const { setIsEditOpen } = useEditPostDialog();
   const { deletePost } = usePostEditor();
-  const { comments, setComments } = useComments();
+  const queryClient = useQueryClient();
 
   const handleClickTag = useCallback(
     (tag: string) => {
@@ -45,15 +46,10 @@ export function PostsTableContainer() {
   const handleOpenDetail = useCallback(
     async (post: Post) => {
       setSelectedPost(post);
-      if (comments[post.id]) {
-        setIsDetailOpen(true);
-        return;
-      }
-      const { comments: selectedPostComments } = await commentApi.get(post.id);
-      setComments((prev) => ({ ...prev, [post.id]: selectedPostComments }));
+      await prefetchCommentsByPost(queryClient, post.id);
       setIsDetailOpen(true);
     },
-    [comments, setComments, setIsDetailOpen, setSelectedPost],
+    [queryClient, setIsDetailOpen, setSelectedPost],
   );
 
   const handleEditPost = useCallback(
