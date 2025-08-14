@@ -1,3 +1,4 @@
 export type { User } from "./model/user.types";
 export { getUsersData } from "./api/user.api";
-export { currentUserIdAtom } from "./model/user.atom";
+export { currentUserIdAtom, selectedUserAtom, isUserModalOpenAtom } from "./model/user.atom";
+export { useSelectedUser } from "./model/user.hook";

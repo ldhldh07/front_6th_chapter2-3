@@ -1,5 +1,5 @@
 import { Plus, Search } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 
 import { splitByHighlight } from "@shared/lib/split-by-highlight";
 import {
@@ -26,6 +26,7 @@ import type { Post } from "@entities/post";
 import { PostsTableWidget } from "@widgets/post-table";
 
 import { commentApi, useComments } from "@/entities/comment";
+import { useSelectedUser } from "@/entities/user";
 import { CommentAddDialogContainer, CommentEditDialogContainer } from "@/features/edit-comment";
 import {
   PostAddDialogContainer,
@@ -73,8 +74,7 @@ const PostsManager = () => {
   const { deletePost } = usePostEditor();
   const { setIsAddOpen: setIsAddPostOpen } = useNewPostForm();
   const { setIsEditOpen: setIsEditPostOpen } = useEditPostDialog();
-  const [showUserModal, setShowUserModal] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null);
+  const { selectedUser, isUserModalOpen, setIsUserModalOpen, setSelectedUser } = useSelectedUser();
 
   const fetchPosts = async () => {
     setIsLoading(true);
@@ -156,7 +156,7 @@ const PostsManager = () => {
       const response = await fetch(`/api/users/${user.id}`);
       const userData = await response.json();
       setSelectedUser(userData);
-      setShowUserModal(true);
+      setIsUserModalOpen(true);
     } catch (error) {
       console.error("사용자 정보 가져오기 오류:", error);
     }
@@ -327,7 +327,7 @@ const PostsManager = () => {
       />
 
       {/* 사용자 모달 */}
-      <Dialog open={showUserModal} onOpenChange={setShowUserModal}>
+      <Dialog open={isUserModalOpen} onOpenChange={setIsUserModalOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>사용자 정보</DialogTitle>
