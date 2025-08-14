@@ -1,7 +1,6 @@
 import { Plus, Search } from "lucide-react";
-import { useCallback, useEffect } from "react";
+import { useEffect } from "react";
 
-import { splitByHighlight } from "@shared/lib/split-by-highlight";
 import {
   Button,
   Input,
@@ -17,33 +16,22 @@ import {
 } from "@shared/ui";
 
 import { postApi, PostDetailDialog, usePosts } from "@entities/post";
-import type { Post } from "@entities/post";
 
-import { PostsTableWidget } from "@widgets/post-table";
-
-import { commentApi, useComments } from "@/entities/comment";
 import { CommentAddDialogContainer, CommentEditDialogContainer } from "@/features/edit-comment";
-import {
-  PostAddDialogContainer,
-  PostEditDialogContainer,
-  useEditPostDialog,
-  useNewPostForm,
-  usePostEditor,
-} from "@/features/edit-post";
+import { PostAddDialogContainer, PostEditDialogContainer, useNewPostForm } from "@/features/edit-post";
 import { usePostFilter } from "@/features/filter-post";
 import { getPostsByTagWithAuthors, getPostsWithAuthors } from "@/features/load-posts";
-import { useUserDetailModal, UserDetailDialogContainer } from "@/features/user-detail-modal";
+import { PostsTableContainer } from "@/features/posts-table";
+import { UserDetailDialogContainer } from "@/features/user-detail-modal";
 
 const PostsManager = () => {
   const {
-    posts,
     total,
     isLoading,
     selectedPost,
     setPosts,
     setTotal,
     setIsLoading,
-    setSelectedPost,
     isDetailOpen: isDetailPostOpen,
     setIsDetailOpen: setIsDetailPostOpen,
   } = usePosts();
@@ -66,11 +54,7 @@ const PostsManager = () => {
 
     updateURL,
   } = usePostFilter();
-  const { comments, setComments } = useComments();
-  const { deletePost } = usePostEditor();
   const { setIsAddOpen: setIsAddPostOpen } = useNewPostForm();
-  const { setIsEditOpen: setIsEditPostOpen } = useEditPostDialog();
-  const { openById: openUserModal } = useUserDetailModal();
 
   const fetchPosts = async () => {
     setIsLoading(true);
@@ -129,28 +113,6 @@ const PostsManager = () => {
     setIsLoading(false);
   };
 
-  const fetchComments = async (postId: number) => {
-    if (comments[postId]) return;
-    try {
-      const { comments } = await commentApi.get(postId);
-      setComments((prev) => ({ ...prev, [postId]: comments }));
-    } catch (error) {
-      console.error("댓글 가져오기 오류:", error);
-    }
-  };
-
-  // 게시물 상세 보기
-  const openPostDetail = (post: Post) => {
-    setSelectedPost(post);
-    fetchComments(post.id);
-    setIsDetailPostOpen(true);
-  };
-
-  const handleOpenUserModal = (user: { id: number } | undefined) => {
-    if (!user) return;
-    void openUserModal(user.id);
-  };
-
   useEffect(() => {
     fetchTags();
   }, []);
@@ -163,25 +125,6 @@ const PostsManager = () => {
     }
     updateURL();
   }, [skip, limit, sortBy, sortOrder, selectedTag]);
-
-  const handleEditPost = useCallback(
-    (newPost: Post) => {
-      setSelectedPost(newPost);
-      setIsEditPostOpen(true);
-    },
-    [setSelectedPost, setIsEditPostOpen],
-  );
-
-  const handleSelectTag = useCallback(
-    (tag: string) => {
-      {
-        setSelectedTag(tag);
-        updateURL();
-      }
-    },
-    [setSelectedTag, updateURL],
-  );
-
   return (
     <Card className="w-full max-w-6xl mx-auto">
       <CardHeader>
@@ -252,20 +195,7 @@ const PostsManager = () => {
           </div>
 
           {/* 게시물 테이블 */}
-          {isLoading ? (
-            <div className="flex justify-center p-4">로딩 중...</div>
-          ) : (
-            <PostsTableWidget
-              posts={posts}
-              selectedTag={selectedTag}
-              makeTitleSegments={(title) => splitByHighlight(title, searchQuery)}
-              onClickTag={handleSelectTag}
-              onOpenUser={handleOpenUserModal}
-              onOpenDetail={openPostDetail}
-              onEdit={handleEditPost}
-              onDelete={deletePost}
-            />
-          )}
+          {isLoading ? <div className="flex justify-center p-4">로딩 중...</div> : <PostsTableContainer />}
 
           {/* 페이지네이션 */}
           <div className="flex justify-between items-center">
