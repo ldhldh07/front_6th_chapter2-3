@@ -7,17 +7,22 @@ import { postLoadApi } from "../api/post-load.api";
 import type { QueryClient } from "@tanstack/react-query";
 
 export const postsListQuery = (params: PostsParams) => ({
-  queryKey: postsQueryKeys.list(params),
+  queryKey: postsQueryKeys.list({
+    limit: params.limit,
+    skip: params.skip,
+    sortBy: params.sortBy,
+    order: params.order,
+  }),
   queryFn: (): Promise<PostsResponse> => postLoadApi.getWithAuthors(params),
 });
 
-export const postsByTagQuery = (tag: string, params?: Pick<PostsParams, "sortBy" | "order">) => ({
-  queryKey: postsQueryKeys.byTag(tag),
+export const postsByTagQuery = (tag: string, params?: Pick<PostsParams, "limit" | "skip" | "sortBy" | "order">) => ({
+  queryKey: postsQueryKeys.byTag(tag, params),
   queryFn: (): Promise<PostsResponse> => postLoadApi.getByTagWithAuthors(tag, params),
 });
 
-export const postsSearchQuery = (query: string, params?: Pick<PostsParams, "sortBy" | "order">) => ({
-  queryKey: postsQueryKeys.search(query),
+export const postsSearchQuery = (query: string, params?: Pick<PostsParams, "limit" | "skip" | "sortBy" | "order">) => ({
+  queryKey: postsQueryKeys.search(query, params),
   queryFn: (): Promise<PostsResponse> => postApi.search(query, params),
 });
 
@@ -34,8 +39,9 @@ export const buildPostsQuery = (params: BuildPostsQueryParams) => {
   const search = params.search?.trim();
   const normalizedSortBy = params.sortBy && params.sortBy !== "none" ? params.sortBy : undefined;
   const sortParams = normalizedSortBy ? { sortBy: normalizedSortBy, order: params.sortOrder } : undefined;
-  if (search) return postsSearchQuery(search, sortParams);
-  if (params.tag) return postsByTagQuery(params.tag, sortParams);
+  if (search) return postsSearchQuery(search, { ...sortParams, limit: params.limit ?? 0, skip: params.skip ?? 0 });
+  if (params.tag)
+    return postsByTagQuery(params.tag, { ...sortParams, limit: params.limit ?? 0, skip: params.skip ?? 0 });
   if (typeof params.limit === "number" && typeof params.skip === "number") {
     return postsListQuery({
       limit: params.limit,

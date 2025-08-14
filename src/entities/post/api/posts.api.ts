@@ -17,10 +17,16 @@ export const postApi = {
   remove(id: number): Promise<void> {
     return http.delete<void>(`/posts/${id}`);
   },
-  async getByTag(tag: string, params?: Pick<PostsParams, "sortBy" | "order">): Promise<PostsResponse> {
+  async getByTag(
+    tag: string,
+    params?: Pick<PostsParams, "limit" | "skip" | "sortBy" | "order">,
+  ): Promise<PostsResponse> {
     return http.get<PostsResponse>(`/posts/tag/${tag}`, { params });
   },
-  async search(query: string, params?: Pick<PostsParams, "sortBy" | "order">): Promise<PostsResponse> {
+  async search(
+    query: string,
+    params?: Pick<PostsParams, "limit" | "skip" | "sortBy" | "order">,
+  ): Promise<PostsResponse> {
     return http.get<PostsResponse>(`/posts/search`, { params: { q: query, ...params } });
   },
   async getTags(): Promise<Tag[]> {
