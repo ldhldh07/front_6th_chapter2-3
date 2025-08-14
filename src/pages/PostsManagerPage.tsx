@@ -30,7 +30,15 @@ import { PostsTableWidget } from "@widgets/post-table";
 import { CommentList, commentApi } from "@/entities/comment";
 import type { Comment } from "@/entities/comment";
 import { useComments } from "@/entities/comment/model/comment.hook";
-import { usePostEditor } from "@/features/edit-post";
+import { useEditCommentDialog, useNewCommentForm } from "@/features/edit-comment";
+import { useCommentEditor } from "@/features/edit-comment/model/edit-comment.hook";
+import {
+  PostAddDialogContainer,
+  PostEditDialogContainer,
+  useEditPostDialog,
+  useNewPostForm,
+  usePostEditor,
+} from "@/features/edit-post";
 import { usePostFilter } from "@/features/filter-post/model/filter-post.hook";
 import { getPostsByTagWithAuthors, getPostsWithAuthors } from "@/features/load-posts";
 
@@ -56,16 +64,19 @@ const PostsManager = () => {
     updateURL,
   } = usePostFilter();
   const { comments, setComments, selectedComment, setSelectedComment } = useComments();
-  const { addPost, updatePost, deletePost } = usePostEditor();
-
-  const [showAddDialog, setShowAddDialog] = useState(false);
-  const [showEditDialog, setShowEditDialog] = useState(false);
-  const [newPost, setNewPost] = useState({ title: "", body: "", userId: 1 });
-  const [newComment, setNewComment] = useState({ body: "", postId: null, userId: 1 });
-  const [showAddCommentDialog, setShowAddCommentDialog] = useState(false);
-  const [showEditCommentDialog, setShowEditCommentDialog] = useState(false);
+  const { deletePost } = usePostEditor();
+  const { setIsAddOpen: setIsAddPostOpen } = useNewPostForm();
+  const { setIsEditOpen: setIsEditPostOpen } = useEditPostDialog();
+  const { addComment, updateComment, deleteComment, likeComment } = useCommentEditor();
   const [showPostDetailDialog, setShowPostDetailDialog] = useState(false);
   const [showUserModal, setShowUserModal] = useState(false);
+  const {
+    newComment,
+    setNewComment,
+    isAddOpen: isAddCommentOpen,
+    setIsAddOpen: setIsAddCommentOpen,
+  } = useNewCommentForm();
+  const { isEditOpen: isEditCommentOpen, setIsEditOpen: setIsEditCommentOpen } = useEditCommentDialog();
   const [selectedUser, setSelectedUser] = useState(null);
 
   const fetchPosts = async () => {
@@ -125,30 +136,6 @@ const PostsManager = () => {
     setIsLoading(false);
   };
 
-  const handleAddPost = async () => {
-    try {
-      await addPost(newPost);
-      setShowAddDialog(false);
-      setNewPost({ title: "", body: "", userId: 1 });
-    } catch (error) {
-      console.error("게시물 추가 오류:", error);
-    }
-  };
-
-  // 게시물 업데이트
-  const handleUpdatePost = async () => {
-    if (!selectedPost) return;
-    try {
-      await updatePost({
-        postId: String(selectedPost.id),
-        params: { title: selectedPost.title ?? "", body: selectedPost.body ?? "" },
-      });
-      setShowEditDialog(false);
-    } catch (error) {
-      console.error("게시물 업데이트 오류:", error);
-    }
-  };
-
   const fetchComments = async (postId: number) => {
     if (comments[postId]) return;
     try {
@@ -160,74 +147,42 @@ const PostsManager = () => {
   };
 
   // 댓글 추가
-  const addComment = async () => {
+  const handleAddComment = async () => {
+    if (newComment.postId == null) return;
     try {
-      const response = await fetch("/api/comments/add", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newComment),
-      });
-      const data = await response.json();
-      setComments((prev) => ({
-        ...prev,
-        [data.postId]: [...(prev[data.postId] || []), data],
-      }));
-      setShowAddCommentDialog(false);
-      setNewComment({ body: "", postId: null, userId: 1 });
+      await addComment({ body: newComment.body, postId: newComment.postId, userId: newComment.userId });
+      setIsAddCommentOpen(false);
+      setNewComment({ ...newComment, body: "", postId: null });
     } catch (error) {
       console.error("댓글 추가 오류:", error);
     }
   };
 
   // 댓글 업데이트
-  const updateComment = async () => {
+  const handleUpdateComment = async () => {
+    if (!selectedComment) return;
     try {
-      const response = await fetch(`/api/comments/${selectedComment.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ body: selectedComment.body }),
-      });
-      const data = await response.json();
-      setComments((prev) => ({
-        ...prev,
-        [data.postId]: prev[data.postId].map((comment) => (comment.id === data.id ? data : comment)),
-      }));
-      setShowEditCommentDialog(false);
+      await updateComment({ id: selectedComment.id, body: selectedComment.body });
+      setIsEditCommentOpen(false);
     } catch (error) {
       console.error("댓글 업데이트 오류:", error);
     }
   };
 
   // 댓글 삭제
-  const deleteComment = async (id, postId) => {
+  const handleDeleteComment = async (id: number, postId: number) => {
     try {
-      await fetch(`/api/comments/${id}`, {
-        method: "DELETE",
-      });
-      setComments((prev) => ({
-        ...prev,
-        [postId]: prev[postId].filter((comment) => comment.id !== id),
-      }));
+      await deleteComment(id, postId);
+      setComments((prev) => ({ ...prev, [postId]: prev[postId].filter((c) => c.id !== id) }));
     } catch (error) {
       console.error("댓글 삭제 오류:", error);
     }
   };
 
   // 댓글 좋아요
-  const likeComment = async (id, postId) => {
+  const handleLikeComment = async (id: number, postId: number) => {
     try {
-      const response = await fetch(`/api/comments/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ likes: comments[postId].find((c) => c.id === id).likes + 1 }),
-      });
-      const data = await response.json();
-      setComments((prev) => ({
-        ...prev,
-        [postId]: prev[postId].map((comment) =>
-          comment.id === data.id ? { ...data, likes: comment.likes + 1 } : comment,
-        ),
-      }));
+      await likeComment(id, postId);
     } catch (error) {
       console.error("댓글 좋아요 오류:", error);
     }
@@ -268,17 +223,17 @@ const PostsManager = () => {
   const handleEditPost = useCallback(
     (newPost: Post) => {
       setSelectedPost(newPost);
-      setShowEditDialog(true);
+      setIsEditPostOpen(true);
     },
-    [setSelectedPost, setShowEditDialog],
+    [setSelectedPost, setIsEditPostOpen],
   );
 
   const handleEditComment = useCallback(
     (newComment: Comment) => {
       setSelectedComment(newComment);
-      setShowEditCommentDialog(true);
+      setIsEditCommentOpen(true);
     },
-    [setSelectedComment],
+    [setSelectedComment, setIsEditCommentOpen],
   );
 
   // 댓글 렌더링
@@ -290,7 +245,7 @@ const PostsManager = () => {
           size="sm"
           onClick={() => {
             setNewComment((prev) => ({ ...prev, postId }));
-            setShowAddCommentDialog(true);
+            setIsAddCommentOpen(true);
           }}
         >
           <Plus className="w-3 h-3 mr-1" />
@@ -300,9 +255,9 @@ const PostsManager = () => {
       <CommentList
         comments={comments[postId]}
         searchQuery={searchQuery}
-        onLike={(id) => selectedPost && likeComment(id, selectedPost.id)}
+        onLike={(id) => selectedPost && handleLikeComment(id, selectedPost.id)}
         onEdit={handleEditComment}
-        onDelete={(id) => selectedPost && deleteComment(id, selectedPost.id)}
+        onDelete={(id) => selectedPost && handleDeleteComment(id, selectedPost.id)}
       />
     </div>
   );
@@ -312,7 +267,7 @@ const PostsManager = () => {
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <span>게시물 관리자</span>
-          <Button onClick={() => setShowAddDialog(true)}>
+          <Button onClick={() => setIsAddPostOpen(true)}>
             <Plus className="w-4 h-4 mr-2" />
             게시물 추가
           </Button>
@@ -424,59 +379,13 @@ const PostsManager = () => {
       </CardContent>
 
       {/* 게시물 추가 대화상자 */}
-      <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>새 게시물 추가</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <Input
-              placeholder="제목"
-              value={newPost.title}
-              onChange={(e) => setNewPost({ ...newPost, title: e.target.value })}
-            />
-            <Textarea
-              rows={30}
-              placeholder="내용"
-              value={newPost.body}
-              onChange={(e) => setNewPost({ ...newPost, body: e.target.value })}
-            />
-            <Input
-              type="number"
-              placeholder="사용자 ID"
-              value={newPost.userId}
-              onChange={(e) => setNewPost({ ...newPost, userId: Number(e.target.value) })}
-            />
-            <Button onClick={handleAddPost}>게시물 추가</Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <PostAddDialogContainer />
 
       {/* 게시물 수정 대화상자 */}
-      <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>게시물 수정</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <Input
-              placeholder="제목"
-              value={selectedPost?.title || ""}
-              onChange={(e) => setSelectedPost({ ...selectedPost, title: e.target.value })}
-            />
-            <Textarea
-              rows={15}
-              placeholder="내용"
-              value={selectedPost?.body || ""}
-              onChange={(e) => setSelectedPost({ ...selectedPost, body: e.target.value })}
-            />
-            <Button onClick={handleUpdatePost}>게시물 업데이트</Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <PostEditDialogContainer />
 
       {/* 댓글 추가 대화상자 */}
-      <Dialog open={showAddCommentDialog} onOpenChange={setShowAddCommentDialog}>
+      <Dialog open={isAddCommentOpen} onOpenChange={setIsAddCommentOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>새 댓글 추가</DialogTitle>
@@ -487,13 +396,13 @@ const PostsManager = () => {
               value={newComment.body}
               onChange={(e) => setNewComment({ ...newComment, body: e.target.value })}
             />
-            <Button onClick={addComment}>댓글 추가</Button>
+            <Button onClick={handleAddComment}>댓글 추가</Button>
           </div>
         </DialogContent>
       </Dialog>
 
       {/* 댓글 수정 대화상자 */}
-      <Dialog open={showEditCommentDialog} onOpenChange={setShowEditCommentDialog}>
+      <Dialog open={isEditCommentOpen} onOpenChange={setIsEditCommentOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>댓글 수정</DialogTitle>
@@ -504,7 +413,7 @@ const PostsManager = () => {
               value={selectedComment?.body || ""}
               onChange={(e) => setSelectedComment({ ...selectedComment, body: e.target.value })}
             />
-            <Button onClick={updateComment}>댓글 업데이트</Button>
+            <Button onClick={handleUpdateComment}>댓글 업데이트</Button>
           </div>
         </DialogContent>
       </Dialog>
