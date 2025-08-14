@@ -15,43 +15,12 @@ export function useCreatePostMutation() {
 
   return useMutation({
     mutationFn: (payload: CreatePostParams) => postApi.create(payload),
-    onMutate: async (payload) => {
+    onSuccess: async (created) => {
       const listQueries = queryClient.getQueryCache().findAll({ queryKey: postsQueryKeys.all });
-      const previousSnapshots = listQueries.map((q) => ({
-        key: q.queryKey,
-        data: q.state.data as { posts: Post[]; total: number } | undefined,
-      }));
-
-      const optimisticId = Date.now();
-      const optimisticPost: Post = {
-        id: optimisticId as number,
-        title: payload.title,
-        body: payload.body,
-        userId: payload.userId,
-      };
-
       listQueries.forEach((q) => {
         const data = (q.state.data as { posts: Post[]; total: number } | undefined) ?? { posts: [], total: 0 };
-        const next = { posts: [optimisticPost, ...data.posts], total: (data.total ?? 0) + 1 };
-        queryClient.setQueryData(q.queryKey, next);
+        queryClient.setQueryData(q.queryKey, { posts: [created, ...data.posts], total: (data.total ?? 0) + 1 });
       });
-
-      return { previousSnapshots, optimisticId } as const;
-    },
-    onError: (_err, _variables, context) => {
-      if (!context) return;
-      context.previousSnapshots.forEach((s) => queryClient.setQueryData(s.key, s.data));
-    },
-    onSuccess: async (created, _variables, context) => {
-      if (context) {
-        const { optimisticId } = context;
-        const listQueries = queryClient.getQueryCache().findAll({ queryKey: postsQueryKeys.all });
-        listQueries.forEach((q) => {
-          const data = (q.state.data as { posts: Post[]; total: number } | undefined) ?? { posts: [], total: 0 };
-          const replaced = data.posts.map((p: Post) => (p.id === optimisticId ? created : p));
-          queryClient.setQueryData(q.queryKey, { posts: replaced, total: data.total });
-        });
-      }
       await queryClient.invalidateQueries({ queryKey: postsQueryKeys.all });
     },
   });
