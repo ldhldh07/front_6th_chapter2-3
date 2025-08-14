@@ -34,7 +34,8 @@ export function PostFilterContainer() {
     } else {
       getPosts({ limit, skip });
     }
-  }, [searchQuery, limit, skip, getPosts, searchPosts]);
+    updateURL();
+  }, [searchQuery, limit, skip, getPosts, searchPosts, updateURL]);
 
   const handleChangeTag = useCallback(
     (value: string) => {
