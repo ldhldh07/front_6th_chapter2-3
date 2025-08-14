@@ -14,7 +14,7 @@ import {
 export function useCommentEditor() {
   const { appendComment, changeComment, removeComment, comments } = useComments();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [draft, setDraft] = useAtom(newCommentAtom);
+  const [newComment, setNewComment] = useAtom(newCommentAtom);
   const [isAddOpen, setIsAddOpen] = useAtom(isAddCommentDialogOpenAtom);
   const [isEditOpen, setIsEditOpen] = useAtom(isEditCommentDialogOpenAtom);
 
@@ -23,7 +23,7 @@ export function useCommentEditor() {
     try {
       const created = await commentApi.create(payload);
       appendComment(created);
-      setDraft({ body: "", postId: null, userId: draft.userId });
+      setNewComment({ body: "", postId: null, userId: newComment.userId });
       setIsAddOpen(false);
     } finally {
       setIsSubmitting(false);
@@ -64,11 +64,11 @@ export function useCommentEditor() {
   };
 
   const prepareNewComment = (postId: number, userId?: number) => {
-    setDraft((prev) => ({ ...prev, postId, userId: userId ?? prev.userId }));
+    setNewComment((prev) => ({ ...prev, postId, userId: userId ?? prev.userId }));
     setIsAddOpen(true);
   };
 
-  const resetDraft = () => setDraft((prev) => ({ ...prev, body: "", postId: null }));
+  const resetDraft = () => setNewComment((prev) => ({ ...prev, body: "", postId: null }));
 
   return {
     addComment,
@@ -76,8 +76,8 @@ export function useCommentEditor() {
     deleteComment,
     likeComment,
     isSubmitting,
-    draft,
-    setDraft,
+    newComment,
+    setNewComment,
     isAddOpen,
     setIsAddOpen,
     isEditOpen,
