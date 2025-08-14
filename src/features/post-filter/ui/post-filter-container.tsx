@@ -1,4 +1,4 @@
-import { ChangeEventHandler, useCallback } from "react";
+import { ChangeEventHandler, useCallback, useEffect } from "react";
 
 import { PostFilter } from "@/entities/post/ui/post-filter";
 import { useLoadPost } from "@/features/post-load/model/post-load.hook";
@@ -20,9 +20,10 @@ export function PostFilterContainer() {
     setSortOrder,
     setSelectedTag,
     updateURL,
+    loadTags,
   } = usePostFilter();
 
-  const { getPosts, searchPosts } = useLoadPost();
+  const { getPosts, getPostsByTag, searchPosts } = useLoadPost();
 
   const handleSearchQueryChange: ChangeEventHandler<HTMLInputElement> = (event) => setSearchQuery(event.target.value);
 
@@ -58,6 +59,20 @@ export function PostFilterContainer() {
     },
     [setSortOrder, updateURL],
   );
+
+  useEffect(() => {
+    void loadTags();
+  }, [loadTags]);
+
+  useEffect(() => {
+    void (async () => {
+      if (selectedTag) {
+        await getPostsByTag(selectedTag);
+      } else {
+        await getPosts({ limit, skip });
+      }
+    })();
+  }, [selectedTag, limit, skip, sortBy, sortOrder, getPosts, getPostsByTag]);
 
   return (
     <PostFilter

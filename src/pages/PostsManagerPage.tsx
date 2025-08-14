@@ -20,7 +20,6 @@ import { PostAddDialogContainer, PostEditDialogContainer, useNewPostForm } from 
 import { usePostFilter } from "@/features/post-filter";
 import { PostFilterContainer } from "@/features/post-filter/ui/post-filter-container";
 import { PostsTableContainer } from "@/features/post-load";
-import { useLoadPost, useSetFilter } from "@/features/post-load/model/post-load.hook";
 import { UserDetailDialogContainer } from "@/features/user-load";
 
 const PostsManager = () => {
@@ -31,11 +30,8 @@ const PostsManager = () => {
     isDetailOpen: isDetailPostOpen,
     setIsDetailOpen: setIsDetailPostOpen,
   } = usePosts();
-  const { skip, limit, searchQuery, selectedTag, setSkip, setLimit, loadTags, updateURL } = usePostFilter();
-  const { getPosts, getPostsByTag } = useLoadPost();
+  const { skip, limit, searchQuery, setSkip, setLimit } = usePostFilter();
   const { setIsAddOpen: setIsAddPostOpen } = useNewPostForm();
-
-  useSetFilter({ skip, limit, selectedTag, loadTags, updateURL, getPosts, getPostsByTag });
 
   return (
     <Card className="w-full max-w-6xl mx-auto">
