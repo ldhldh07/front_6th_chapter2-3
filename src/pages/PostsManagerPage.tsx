@@ -22,7 +22,7 @@ import {
 } from "@shared/ui";
 import { HighlightText } from "@shared/ui/highlight-text";
 
-import { getPostsWithAuthors, usePosts } from "@entities/post";
+import { postApi, usePosts } from "@entities/post";
 import type { Post } from "@entities/post";
 
 import { PostsTableWidget } from "@widgets/post-table";
@@ -32,6 +32,7 @@ import type { Comment } from "@/entities/comment";
 import { useComments } from "@/entities/comment/model/comment.hook";
 import { usePostEditor } from "@/features/edit-post";
 import { usePostFilter } from "@/features/filter-post/model/filter-post.hook";
+import { getPostsByTagWithAuthors, getPostsWithAuthors } from "@/features/load-posts";
 
 const PostsManager = () => {
   const { posts, total, isLoading, selectedPost, setPosts, setTotal, setIsLoading, setSelectedPost } = usePosts();
@@ -42,6 +43,7 @@ const PostsManager = () => {
     sortBy,
     sortOrder,
     selectedTag,
+    tags,
 
     setSkip,
     setLimit,
@@ -49,6 +51,7 @@ const PostsManager = () => {
     setSortBy,
     setSortOrder,
     setSelectedTag,
+    setTags,
 
     updateURL,
   } = usePostFilter();
@@ -58,7 +61,6 @@ const PostsManager = () => {
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [newPost, setNewPost] = useState({ title: "", body: "", userId: 1 });
-  const [tags, setTags] = useState([]);
   const [newComment, setNewComment] = useState({ body: "", postId: null, userId: 1 });
   const [showAddCommentDialog, setShowAddCommentDialog] = useState(false);
   const [showEditCommentDialog, setShowEditCommentDialog] = useState(false);
@@ -82,8 +84,7 @@ const PostsManager = () => {
   // 태그 가져오기
   const fetchTags = async () => {
     try {
-      const response = await fetch("/api/posts/tags");
-      const data = await response.json();
+      const data = await postApi.getTags();
       setTags(data);
     } catch (error) {
       console.error("태그 가져오기 오류:", error);
@@ -98,10 +99,9 @@ const PostsManager = () => {
     }
     setIsLoading(true);
     try {
-      const response = await fetch(`/api/posts/search?q=${searchQuery}`);
-      const data = await response.json();
-      setPosts(data.posts);
-      setTotal(data.total);
+      const { posts, total } = await postApi.search(searchQuery);
+      setPosts(posts);
+      setTotal(total);
     } catch (error) {
       console.error("게시물 검색 오류:", error);
     }
@@ -116,20 +116,9 @@ const PostsManager = () => {
     }
     setIsLoading(true);
     try {
-      const [postsResponse, usersResponse] = await Promise.all([
-        fetch(`/api/posts/tag/${tag}`),
-        fetch("/api/users?limit=0&select=username,image"),
-      ]);
-      const postsData = await postsResponse.json();
-      const usersData = await usersResponse.json();
-
-      const postsWithUsers = postsData.posts.map((post) => ({
-        ...post,
-        author: usersData.users.find((user) => user.id === post.userId),
-      }));
-
-      setPosts(postsWithUsers);
-      setTotal(postsData.total);
+      const { posts, total } = await getPostsByTagWithAuthors(tag);
+      setPosts(posts);
+      setTotal(total);
     } catch (error) {
       console.error("태그별 게시물 가져오기 오류:", error);
     }
