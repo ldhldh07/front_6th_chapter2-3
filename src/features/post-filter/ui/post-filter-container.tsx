@@ -1,10 +1,8 @@
 import { ChangeEventHandler, useCallback } from "react";
 
-import { PostFilter } from "@/entities/post/ui/post-filter";
+import { PostFilter } from "@entities/post/ui/post-filter";
 
-import { SortBy, SortOrder } from "../model/filter-post.atoms";
-import { usePostSearchParams } from "../model/filter-post.hook";
-import { useTagsQuery } from "../model/use-tags.query";
+import { SortBy, SortOrder, usePostSearchParams, useTagsQuery } from "@features/post-filter";
 
 export function PostFilterContainer() {
   const { params, setParams } = usePostSearchParams();

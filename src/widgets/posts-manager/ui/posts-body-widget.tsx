@@ -1,6 +1,6 @@
 import { CardContent } from "@shared/ui";
 
-import { usePostSearchParams } from "@/features/post-filter/model/filter-post.hook";
+import { SortOrder, usePostSearchParams } from "@/features/post-filter";
 import { PostFilterContainer } from "@/features/post-filter/ui/post-filter-container";
 import { PostsTableContainer } from "@/features/post-load";
 import { usePostsQuery } from "@/features/post-load/model/posts.query.ts";
@@ -13,6 +13,8 @@ export function PostsBodyWidget() {
     skip: params.skip,
     tag: params.tag,
     search: params.search,
+    sortBy: params.sortBy,
+    sortOrder: params.sortOrder as SortOrder,
   });
 
   return (

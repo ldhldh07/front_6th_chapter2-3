@@ -5,8 +5,8 @@ import { Post } from "../model/post.types";
 import type { Tag } from "../model/post.types";
 
 export const postApi = {
-  get({ limit, skip }: PostsParams): Promise<PostsResponse> {
-    return http.get<PostsResponse>("/posts", { params: { limit, skip } });
+  get({ limit, skip, sortBy, order }: PostsParams): Promise<PostsResponse> {
+    return http.get<PostsResponse>("/posts", { params: { limit, skip, sortBy, order } });
   },
   create(payload: CreatePostParams): Promise<Post> {
     return http.post<Post>("/posts/add", payload);
@@ -17,11 +17,11 @@ export const postApi = {
   remove(id: number): Promise<void> {
     return http.delete<void>(`/posts/${id}`);
   },
-  async getByTag(tag: string): Promise<PostsResponse> {
-    return http.get<PostsResponse>(`/posts/tag/${tag}`);
+  async getByTag(tag: string, params?: Pick<PostsParams, "sortBy" | "order">): Promise<PostsResponse> {
+    return http.get<PostsResponse>(`/posts/tag/${tag}`, { params });
   },
-  async search(query: string): Promise<PostsResponse> {
-    return http.get<PostsResponse>(`/posts/search`, { params: { q: query } });
+  async search(query: string, params?: Pick<PostsParams, "sortBy" | "order">): Promise<PostsResponse> {
+    return http.get<PostsResponse>(`/posts/search`, { params: { q: query, ...params } });
   },
   async getTags(): Promise<Tag[]> {
     return http.get<Tag[]>(`/posts/tags`);
@@ -45,6 +45,8 @@ export type UpdatePostPayload = {
 export interface PostsParams {
   limit: number;
   skip: number;
+  sortBy?: string;
+  order?: "asc" | "desc";
 }
 
 export interface PostsResponse {

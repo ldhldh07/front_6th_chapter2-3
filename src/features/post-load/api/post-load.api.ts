@@ -11,8 +11,8 @@ export const postLoadApi = {
     }));
     return { posts: postsWithUsers, total };
   },
-  async getByTagWithAuthors(tag: string): Promise<PostsResponse> {
-    const [{ posts, total }, users] = await Promise.all([postApi.getByTag(tag), userApi.getProfile()]);
+  async getByTagWithAuthors(tag: string, params?: Pick<PostsParams, "sortBy" | "order">): Promise<PostsResponse> {
+    const [{ posts, total }, users] = await Promise.all([postApi.getByTag(tag, params), userApi.getProfile()]);
     const postsWithUsers = posts.map((post) => ({
       ...post,
       author: users.find((user) => user.id === post.userId),
