@@ -1,5 +1,5 @@
-import { Edit2, Plus, Search, ThumbsUp, Trash2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Plus, Search } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 
 import { splitByHighlight } from "@shared/lib/split-by-highlight";
 import {
@@ -23,10 +23,12 @@ import {
 import { HighlightText } from "@shared/ui/highlight-text";
 
 import { getPostsWithAuthors, usePost } from "@entities/post";
+import type { Post } from "@entities/post";
 
 import { PostsTableWidget } from "@widgets/post-table";
 
-import { commentApi } from "@/entities/comment";
+import { CommentList, commentApi } from "@/entities/comment";
+import type { Comment } from "@/entities/comment";
 import { useComments } from "@/entities/comment/model/comment.hook";
 import { usePostEditor } from "@/features/edit-post";
 import { usePostFilter } from "@/features/filter-post/model/filter-post.hook";
@@ -274,6 +276,22 @@ const PostsManager = () => {
     updateURL();
   }, [skip, limit, sortBy, sortOrder, selectedTag]);
 
+  const handleEditPost = useCallback(
+    (newPost: Post) => {
+      setSelectedPost(newPost);
+      setShowEditDialog(true);
+    },
+    [setSelectedPost, setShowEditDialog],
+  );
+
+  const handleEditComment = useCallback(
+    (newComment: Comment) => {
+      setSelectedComment(newComment);
+      setShowEditCommentDialog(true);
+    },
+    [setSelectedComment],
+  );
+
   // 댓글 렌더링
   const renderComments = (postId) => (
     <div className="mt-2">
@@ -290,37 +308,13 @@ const PostsManager = () => {
           댓글 추가
         </Button>
       </div>
-      <div className="space-y-1">
-        {comments[postId]?.map((comment) => (
-          <div key={comment.id} className="flex items-center justify-between text-sm border-b pb-1">
-            <div className="flex items-center space-x-2 overflow-hidden">
-              <span className="font-medium truncate">{comment.user.username}:</span>
-              <span className="truncate">
-                <HighlightText segments={splitByHighlight(comment.body, searchQuery)} />
-              </span>
-            </div>
-            <div className="flex items-center space-x-1">
-              <Button variant="ghost" size="sm" onClick={() => likeComment(comment.id, postId)}>
-                <ThumbsUp className="w-3 h-3" />
-                <span className="ml-1 text-xs">{comment.likes}</span>
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  setSelectedComment(comment);
-                  setShowEditCommentDialog(true);
-                }}
-              >
-                <Edit2 className="w-3 h-3" />
-              </Button>
-              <Button variant="ghost" size="sm" onClick={() => deleteComment(comment.id, postId)}>
-                <Trash2 className="w-3 h-3" />
-              </Button>
-            </div>
-          </div>
-        ))}
-      </div>
+      <CommentList
+        comments={comments[postId]}
+        searchQuery={searchQuery}
+        onLike={(id) => selectedPost && likeComment(id, selectedPost.id)}
+        onEdit={handleEditComment}
+        onDelete={(id) => selectedPost && deleteComment(id, selectedPost.id)}
+      />
     </div>
   );
 
@@ -407,10 +401,7 @@ const PostsManager = () => {
               }}
               onOpenUser={openUserModal}
               onOpenDetail={openPostDetail}
-              onEdit={(p) => {
-                setSelectedPost(p);
-                setShowEditDialog(true);
-              }}
+              onEdit={handleEditPost}
               onDelete={deletePost}
             />
           )}

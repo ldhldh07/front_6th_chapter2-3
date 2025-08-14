@@ -1,7 +1,8 @@
 import { useAtom, useAtomValue } from "jotai";
 import { useState } from "react";
 
-import { commentApi, CreateCommentPayload, UpdateCommentPayload, useComments } from "@/entities/comment";
+import { commentApi, useComments } from "@/entities/comment";
+import type { CreateCommentPayload, UpdateCommentPayload } from "@/entities/comment";
 import { currentUserIdAtom } from "@/entities/user";
 
 import { isAddCommentDialogOpenAtom, isEditCommentDialogOpenAtom, newCommentAtom } from "./edit-comment.atoms";
