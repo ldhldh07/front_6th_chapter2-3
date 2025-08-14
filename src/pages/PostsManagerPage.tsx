@@ -1,17 +1,6 @@
 import { Plus } from "lucide-react";
 
-import {
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@shared/ui";
+import { Button, Card, CardContent, CardHeader, CardTitle } from "@shared/ui";
 
 import { PostDetailDialog, usePosts } from "@entities/post";
 
@@ -20,6 +9,7 @@ import { PostAddDialogContainer, PostEditDialogContainer, useNewPostForm } from 
 import { usePostFilter } from "@/features/post-filter";
 import { PostFilterContainer } from "@/features/post-filter/ui/post-filter-container";
 import { PostsTableContainer } from "@/features/post-load";
+import { PostPagination } from "@/features/post-pagination/ui/post-pagination";
 import { UserDetailDialogContainer } from "@/features/user-load";
 
 const PostsManager = () => {
@@ -53,30 +43,14 @@ const PostsManager = () => {
           {isLoading ? <div className="flex justify-center p-4">로딩 중...</div> : <PostsTableContainer />}
 
           {/* 페이지네이션 */}
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-2">
-              <span>표시</span>
-              <Select value={limit.toString()} onValueChange={(value) => setLimit(Number(value))}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="10" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="10">10</SelectItem>
-                  <SelectItem value="20">20</SelectItem>
-                  <SelectItem value="30">30</SelectItem>
-                </SelectContent>
-              </Select>
-              <span>항목</span>
-            </div>
-            <div className="flex gap-2">
-              <Button disabled={skip === 0} onClick={() => setSkip(Math.max(0, skip - limit))}>
-                이전
-              </Button>
-              <Button disabled={skip + limit >= total} onClick={() => setSkip(skip + limit)}>
-                다음
-              </Button>
-            </div>
-          </div>
+          <PostPagination
+            total={total}
+            skip={skip}
+            limit={limit}
+            onChangeLimit={(value) => setLimit(Number(value))}
+            onPrev={() => setSkip(Math.max(0, skip - limit))}
+            onNext={() => setSkip(skip + limit)}
+          />
         </div>
       </CardContent>
 
