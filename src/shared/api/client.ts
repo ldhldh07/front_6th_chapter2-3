@@ -2,8 +2,19 @@ import { BASE_URL } from "@/shared/lib/env";
 
 type Query = Record<string, string | number | boolean | string[] | undefined>;
 
+function toAbsoluteBase(base: string): string {
+  if (/^https?:\/\//.test(base)) return base;
+  const origin =
+    typeof window !== "undefined" && window.location && window.location.origin
+      ? window.location.origin
+      : "http://localhost";
+  const normalized = base.startsWith("/") ? base : `/${base}`;
+  return origin + normalized;
+}
+
 function buildUrl(base: string, path: string, params?: Query) {
-  const url = new URL(path.replace(/^\//, ""), base.endsWith("/") ? base : base + "/");
+  const absoluteBase = toAbsoluteBase(base);
+  const url = new URL(path.replace(/^\//, ""), absoluteBase.endsWith("/") ? absoluteBase : absoluteBase + "/");
   if (params) {
     Object.entries(params).forEach(([key, value]) => {
       if (value === undefined) return;
@@ -38,7 +49,12 @@ export function createHttpClient(baseUrl: string): HttpClient {
 
   return {
     get: (path, options) =>
-      request(buildUrl(baseUrl, path, options?.params), { method: "GET", headers: options?.headers }),
+      request(buildUrl(baseUrl, path, options?.params), {
+        method: "GET",
+        headers: options?.headers,
+        // Avoid 304 Not Modified returning empty body in browsers
+        cache: "no-store",
+      }),
     post: (path, body, options) =>
       request(buildUrl(baseUrl, path), {
         method: "POST",

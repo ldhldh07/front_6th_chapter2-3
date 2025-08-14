@@ -20,15 +20,15 @@ export const usePostSearchParams = () => {
       skip: Number.parseInt(params.get("skip") || "0") || 0,
       limit: Number.parseInt(params.get("limit") || "10") || 10,
       search: params.get("search") || undefined,
-      sortBy: params.get("sortBy") || undefined,
-      sortOrder: params.get("sortOrder") || undefined,
+      sortBy: params.get("sortBy") || "id",
+      sortOrder: params.get("sortOrder") || "asc",
       tag: params.get("tag") || undefined,
     };
   }, [location.search]);
 
   const update = useCallback(
     (next: Partial<PostSearchParams>) => {
-      const merged: PostSearchParams = { ...value, ...next } as PostSearchParams;
+      const merged: PostSearchParams = { ...value, sortBy: "id", sortOrder: "asc", ...next } as PostSearchParams;
       const current = new URLSearchParams(location.search);
       current.set("skip", String(merged.skip ?? 0));
       current.set("limit", String(merged.limit ?? 10));
@@ -37,8 +37,8 @@ export const usePostSearchParams = () => {
         else current.delete(key);
       };
       setOrDelete("search", merged.search);
-      setOrDelete("sortBy", merged.sortBy);
-      setOrDelete("sortOrder", merged.sortOrder);
+      current.set("sortBy", merged.sortBy || "id");
+      current.set("sortOrder", merged.sortOrder || "asc");
       setOrDelete("tag", merged.tag);
       navigate({ search: `?${current.toString()}` }, { replace: false });
     },

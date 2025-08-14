@@ -1,5 +1,4 @@
 import type { PostsParams, PostsResponse } from "@/entities/post";
-import { postApi } from "@/entities/post";
 import { postsQueryKeys } from "@/entities/post/model/post.keys";
 
 import { postLoadApi } from "../api/post-load.api";

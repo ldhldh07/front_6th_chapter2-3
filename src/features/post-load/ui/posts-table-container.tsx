@@ -5,6 +5,7 @@ import { prefetchCommentsByPost } from "@/entities/comment/model/comment.query";
 import { PostsTable, usePosts } from "@/entities/post";
 import type { Post } from "@/entities/post";
 import { useEditPostDialog, usePostEditor } from "@/features/post-edit";
+import type { SortOrder } from "@/features/post-filter";
 import { usePostSearchParams } from "@/features/post-filter/model/filter-post.hook";
 import { usePostsQuery } from "@/features/post-load/model/posts.query.ts";
 import { useUserDetailModal } from "@/features/user-load";
@@ -20,6 +21,8 @@ export function PostsTableContainer() {
     skip: params.skip,
     tag: params.tag,
     search: params.search,
+    sortBy: params.sortBy,
+    sortOrder: (params.sortOrder as SortOrder) ?? "asc",
   });
   const posts: Post[] = data?.posts ?? [];
   const { openById } = useUserDetailModal();

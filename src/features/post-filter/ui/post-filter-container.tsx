@@ -8,7 +8,7 @@ export function PostFilterContainer() {
   const { params, setParams } = usePostSearchParams();
   const searchQuery = params.search ?? "";
   const selectedTag = params.tag ?? "";
-  const sortBy = (params.sortBy as SortBy) ?? "none";
+  const sortBy = (params.sortBy as SortBy) ?? "id";
   const sortOrder = (params.sortOrder as SortOrder) ?? "asc";
   const { data: tags = [] } = useTagsQuery();
 
