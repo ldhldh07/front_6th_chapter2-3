@@ -22,7 +22,7 @@ import {
 } from "@shared/ui";
 import { HighlightText } from "@shared/ui/highlight-text";
 
-import { getPostsWithAuthors, usePost } from "@entities/post";
+import { getPostsWithAuthors, usePosts } from "@entities/post";
 import type { Post } from "@entities/post";
 
 import { PostsTableWidget } from "@widgets/post-table";
@@ -34,7 +34,7 @@ import { usePostEditor } from "@/features/edit-post";
 import { usePostFilter } from "@/features/filter-post/model/filter-post.hook";
 
 const PostsManager = () => {
-  const { posts, total, isLoading, selectedPost, setPosts, setTotal, setIsLoading, setSelectedPost } = usePost();
+  const { posts, total, isLoading, selectedPost, setPosts, setTotal, setIsLoading, setSelectedPost } = usePosts();
   const {
     skip,
     limit,

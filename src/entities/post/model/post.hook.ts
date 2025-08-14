@@ -4,7 +4,7 @@ import { isPostsLoadingAtom, postsAtom, selectedPostAtom, totalPostAtom } from "
 
 import type { Post } from "./post.types";
 
-export const usePost = () => {
+export const usePosts = () => {
   const [posts, setPosts] = useAtom(postsAtom);
   const [total, setTotal] = useAtom(totalPostAtom);
   const [isLoading, setIsLoading] = useAtom(isPostsLoadingAtom);
