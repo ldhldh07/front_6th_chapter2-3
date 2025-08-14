@@ -27,10 +27,15 @@ import type { Post } from "@entities/post";
 
 import { PostsTableWidget } from "@widgets/post-table";
 
-import { CommentAddDialog, CommentEditDialog, CommentList, commentApi } from "@/entities/comment";
+import { CommentList, commentApi } from "@/entities/comment";
 import type { Comment } from "@/entities/comment";
 import { useComments } from "@/entities/comment/model/comment.hook";
-import { useEditCommentDialog, useNewCommentForm } from "@/features/edit-comment";
+import {
+  CommentAddDialogContainer,
+  CommentEditDialogContainer,
+  useEditCommentDialog,
+  useNewCommentForm,
+} from "@/features/edit-comment";
 import { useCommentEditor } from "@/features/edit-comment/model/edit-comment.hook";
 import {
   PostAddDialogContainer,
@@ -63,20 +68,15 @@ const PostsManager = () => {
 
     updateURL,
   } = usePostFilter();
-  const { comments, setComments, selectedComment, setSelectedComment } = useComments();
+  const { comments, setComments, setSelectedComment } = useComments();
   const { deletePost } = usePostEditor();
   const { setIsAddOpen: setIsAddPostOpen } = useNewPostForm();
   const { setIsEditOpen: setIsEditPostOpen } = useEditPostDialog();
-  const { addComment, updateComment, deleteComment, likeComment } = useCommentEditor();
+  const { deleteComment, likeComment } = useCommentEditor();
   const [showPostDetailDialog, setShowPostDetailDialog] = useState(false);
   const [showUserModal, setShowUserModal] = useState(false);
-  const {
-    newComment,
-    setNewComment,
-    isAddOpen: isAddCommentOpen,
-    setIsAddOpen: setIsAddCommentOpen,
-  } = useNewCommentForm();
-  const { isEditOpen: isEditCommentOpen, setIsEditOpen: setIsEditCommentOpen } = useEditCommentDialog();
+  const { setNewComment, setIsAddOpen: setIsAddCommentOpen } = useNewCommentForm();
+  const { setIsEditOpen: setIsEditCommentOpen } = useEditCommentDialog();
   const [selectedUser, setSelectedUser] = useState(null);
 
   const fetchPosts = async () => {
@@ -143,29 +143,6 @@ const PostsManager = () => {
       setComments((prev) => ({ ...prev, [postId]: comments }));
     } catch (error) {
       console.error("댓글 가져오기 오류:", error);
-    }
-  };
-
-  // 댓글 추가
-  const handleAddComment = async () => {
-    if (newComment.postId == null) return;
-    try {
-      await addComment({ body: newComment.body, postId: newComment.postId, userId: newComment.userId });
-      setIsAddCommentOpen(false);
-      setNewComment({ ...newComment, body: "", postId: null });
-    } catch (error) {
-      console.error("댓글 추가 오류:", error);
-    }
-  };
-
-  // 댓글 업데이트
-  const handleUpdateComment = async () => {
-    if (!selectedComment) return;
-    try {
-      await updateComment({ id: selectedComment.id, body: selectedComment.body });
-      setIsEditCommentOpen(false);
-    } catch (error) {
-      console.error("댓글 업데이트 오류:", error);
     }
   };
 
@@ -385,22 +362,10 @@ const PostsManager = () => {
       <PostEditDialogContainer />
 
       {/* 댓글 추가 대화상자 */}
-      <CommentAddDialog
-        open={isAddCommentOpen}
-        onOpenChange={setIsAddCommentOpen}
-        body={newComment.body}
-        onChange={(e) => setNewComment({ ...newComment, body: e.target.value })}
-        onSubmit={handleAddComment}
-      />
+      <CommentAddDialogContainer />
 
       {/* 댓글 수정 대화상자 */}
-      <CommentEditDialog
-        open={isEditCommentOpen}
-        onOpenChange={setIsEditCommentOpen}
-        comment={selectedComment}
-        onChange={(e) => setSelectedComment((prev) => (prev ? { ...prev, body: e.currentTarget.value } : prev))}
-        onSubmit={handleUpdateComment}
-      />
+      <CommentEditDialogContainer />
 
       {/* 게시물 상세 보기 대화상자 */}
       <Dialog open={showPostDetailDialog} onOpenChange={setShowPostDetailDialog}>
