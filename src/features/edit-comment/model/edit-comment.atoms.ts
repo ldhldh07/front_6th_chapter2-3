@@ -3,10 +3,10 @@ import { atom } from "jotai";
 export interface NewCommentDraft {
   body: string;
   postId: number | null;
-  userId: number | null;
+  userId: number;
 }
 
-const defaultCommentDraft = { body: "", postId: null, userId: null };
+const defaultCommentDraft: NewCommentDraft = { body: "", postId: null, userId: 1 };
 
 export const newCommentAtom = atom<NewCommentDraft>(defaultCommentDraft);
 
