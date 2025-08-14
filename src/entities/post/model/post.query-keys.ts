@@ -4,6 +4,7 @@ export const postsQueryKeys = {
   byTag: (tag: string) => ["posts", "tag", tag] as const,
   search: (query: string) => ["posts", "search", query] as const,
   detail: (id: number) => ["posts", "detail", id] as const,
+  tags: ["posts", "tags"] as const,
 } as const;
 
 export type PostsListParams = { limit: number; skip: number };

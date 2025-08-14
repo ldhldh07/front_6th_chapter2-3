@@ -4,13 +4,23 @@ import { useComments, commentApi } from "@/entities/comment";
 import { PostsTable, usePosts } from "@/entities/post";
 import type { Post } from "@/entities/post";
 import { useEditPostDialog, usePostEditor } from "@/features/post-edit";
-import { usePostFilter } from "@/features/post-filter";
+import { usePostSearchParams } from "@/features/post-filter/model/filter-post.hook";
+import { usePostsQuery } from "@/features/post-load/model/posts.query.ts";
 import { useUserDetailModal } from "@/features/user-load";
 import { splitByHighlight } from "@/shared/lib/split-by-highlight";
 
 export function PostsTableContainer() {
-  const { posts, setSelectedPost, setIsDetailOpen } = usePosts();
-  const { selectedTag, searchQuery, setSelectedTag, updateURL } = usePostFilter();
+  const { setSelectedPost, setIsDetailOpen } = usePosts();
+  const { params, setParams } = usePostSearchParams();
+  const selectedTag = params.tag ?? "";
+  const searchQuery = params.search ?? "";
+  const { data } = usePostsQuery({
+    limit: params.limit,
+    skip: params.skip,
+    tag: params.tag,
+    search: params.search,
+  });
+  const posts: Post[] = data?.posts ?? [];
   const { openById } = useUserDetailModal();
   const { setIsEditOpen } = useEditPostDialog();
   const { deletePost } = usePostEditor();
@@ -19,10 +29,9 @@ export function PostsTableContainer() {
   const handleClickTag = useCallback(
     (tag: string) => {
       if (tag === selectedTag) return;
-      setSelectedTag(tag);
-      updateURL();
+      setParams({ tag, skip: 0 });
     },
-    [selectedTag, setSelectedTag, updateURL],
+    [selectedTag, setParams],
   );
 
   const handleOpenUser = useCallback(

@@ -1,79 +1,46 @@
-import { ChangeEventHandler, useCallback, useEffect } from "react";
+import { ChangeEventHandler, useCallback } from "react";
 
 import { PostFilter } from "@/entities/post/ui/post-filter";
-import { useLoadPost } from "@/features/post-load/model/post-load.hook";
 
 import { SortBy, SortOrder } from "../model/filter-post.atoms";
-import { usePostFilter } from "../model/filter-post.hook";
+import { usePostSearchParams } from "../model/filter-post.hook";
+import { useTagsQuery } from "../model/use-tags.query";
 
 export function PostFilterContainer() {
-  const {
-    skip,
-    limit,
-    searchQuery,
-    sortBy,
-    sortOrder,
-    selectedTag,
-    tags,
-    setSearchQuery,
-    setSortBy,
-    setSortOrder,
-    setSelectedTag,
-    updateURL,
-    loadTags,
-  } = usePostFilter();
+  const { params, setParams } = usePostSearchParams();
+  const searchQuery = params.search ?? "";
+  const selectedTag = params.tag ?? "";
+  const sortBy = (params.sortBy as SortBy) ?? "none";
+  const sortOrder = (params.sortOrder as SortOrder) ?? "asc";
+  const { data: tags = [] } = useTagsQuery();
 
-  const { getPosts, getPostsByTag, searchPosts } = useLoadPost();
-
-  const handleSearchQueryChange: ChangeEventHandler<HTMLInputElement> = (event) => setSearchQuery(event.target.value);
+  const handleSearchQueryChange: ChangeEventHandler<HTMLInputElement> = (event) =>
+    setParams({ search: event.target.value, skip: 0 });
 
   const handleEnter = useCallback(() => {
-    const query = searchQuery?.trim();
-    if (query) {
-      searchPosts({ query, limit, skip });
-    } else {
-      getPosts({ limit, skip });
-    }
-    updateURL();
-  }, [searchQuery, limit, skip, getPosts, searchPosts, updateURL]);
+    setParams({ search: searchQuery?.trim() || undefined, skip: 0 });
+  }, [searchQuery, setParams]);
 
   const handleChangeTag = useCallback(
     (value: string) => {
-      setSelectedTag(value);
-      updateURL();
+      setParams({ tag: value || undefined, skip: 0 });
     },
-    [setSelectedTag, updateURL],
+    [setParams],
   );
 
   const handleChangeSortBy = useCallback(
     (value: string) => {
-      setSortBy(value as SortBy);
-      updateURL();
+      setParams({ sortBy: value as SortBy, skip: 0 });
     },
-    [setSortBy, updateURL],
+    [setParams],
   );
 
   const handleChangeSortOrder = useCallback(
     (value: string) => {
-      setSortOrder(value as SortOrder);
-      updateURL();
+      setParams({ sortOrder: value as SortOrder, skip: 0 });
     },
-    [setSortOrder, updateURL],
+    [setParams],
   );
-
-  useEffect(() => {
-    void loadTags();
-  }, [loadTags]);
-
-  useEffect(() => {
-    void (async () => {
-      if (selectedTag) {
-        await getPostsByTag(selectedTag);
-      } else {
-        await getPosts({ limit, skip });
-      }
-    })();
-  }, [selectedTag, limit, skip, sortBy, sortOrder, getPosts, getPostsByTag]);
 
   return (
     <PostFilter

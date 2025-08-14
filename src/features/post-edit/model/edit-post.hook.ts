@@ -1,9 +1,8 @@
 import { useAtom } from "jotai";
 import { useState } from "react";
 
-import { usePosts } from "@entities/post";
-
-import { postApi, type CreatePostParams, type UpdatePostPayload } from "@/entities/post";
+import type { CreatePostParams, UpdatePostPayload } from "@/entities/post";
+import { useCreatePostMutation, useDeletePostMutation, useUpdatePostMutation } from "@/entities/post/model/post.query";
 
 import { isAddPostDialogOpenAtom, isEditPostDialogOpenAtom, newPostAtom } from "./edit-post.atoms";
 
@@ -19,17 +18,15 @@ export const useEditPostDialog = () => {
 };
 
 export const usePostEditor = () => {
-  const { posts, appendPost, changePost, removePost } = usePosts();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const createMutation = useCreatePostMutation();
+  const updateMutation = useUpdatePostMutation();
+  const deleteMutation = useDeletePostMutation();
 
   const addPost = async (payload: CreatePostParams) => {
     setIsSubmitting(true);
     try {
-      const createdPost = await postApi.create(payload);
-      appendPost(createdPost);
-    } catch (error) {
-      if (error instanceof Error) throw error;
-      throw new Error(String(error));
+      await createMutation.mutateAsync(payload);
     } finally {
       setIsSubmitting(false);
     }
@@ -37,16 +34,8 @@ export const usePostEditor = () => {
 
   const updatePost = async (payload: UpdatePostPayload) => {
     setIsSubmitting(true);
-    const prev = posts.find((post) => post.id === Number(payload.postId));
     try {
-      const updated = await postApi.update(payload);
-      changePost({
-        ...updated,
-        author: prev?.author,
-      });
-    } catch (error) {
-      if (error instanceof Error) throw error;
-      throw new Error(String(error));
+      await updateMutation.mutateAsync(payload);
     } finally {
       setIsSubmitting(false);
     }
@@ -55,11 +44,7 @@ export const usePostEditor = () => {
   const deletePost = async (id: number) => {
     setIsSubmitting(true);
     try {
-      await postApi.remove(id);
-      removePost(id);
-    } catch (error) {
-      if (error instanceof Error) throw error;
-      throw new Error(String(error));
+      await deleteMutation.mutateAsync(id);
     } finally {
       setIsSubmitting(false);
     }

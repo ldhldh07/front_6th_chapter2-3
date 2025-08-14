@@ -1,82 +1,49 @@
-// src/features/post-fllter/model/use-post-filter.ts
-import { useAtom } from "jotai";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { postApi } from "@/entities/post";
+export interface PostSearchParams {
+  skip: number;
+  limit: number;
+  search?: string;
+  sortBy?: string;
+  sortOrder?: string;
+  tag?: string;
+}
 
-import {
-  limitAtom,
-  searchQueryAtom,
-  selectedTagAtom,
-  skipAtom,
-  SortBy,
-  sortByAtom,
-  SortOrder,
-  sortOrderAtom,
-  tagsAtom,
-} from "./filter-post.atoms";
-
-export const usePostFilter = () => {
+export const usePostSearchParams = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const queryParams = useMemo(() => new URLSearchParams(location.search), [location.search]);
 
-  const [skip, setSkip] = useAtom(skipAtom);
-  const [limit, setLimit] = useAtom(limitAtom);
-  const [searchQuery, setSearchQuery] = useAtom(searchQueryAtom);
-  const [sortBy, setSortBy] = useAtom(sortByAtom);
-  const [sortOrder, setSortOrder] = useAtom(sortOrderAtom);
-  const [selectedTag, setSelectedTag] = useAtom(selectedTagAtom);
-  const [tags, setTags] = useAtom(tagsAtom);
+  const value: PostSearchParams = useMemo(() => {
+    const params = new URLSearchParams(location.search);
+    return {
+      skip: Number.parseInt(params.get("skip") || "0") || 0,
+      limit: Number.parseInt(params.get("limit") || "10") || 10,
+      search: params.get("search") || undefined,
+      sortBy: params.get("sortBy") || undefined,
+      sortOrder: params.get("sortOrder") || undefined,
+      tag: params.get("tag") || undefined,
+    };
+  }, [location.search]);
 
-  const loadTags = useCallback(async () => {
-    try {
-      const data = await postApi.getTags();
-      setTags(data);
-    } catch (error) {
-      console.error("태그 가져오기 오류:", error);
-    }
-  }, [setTags]);
+  const update = useCallback(
+    (next: Partial<PostSearchParams>) => {
+      const merged: PostSearchParams = { ...value, ...next } as PostSearchParams;
+      const current = new URLSearchParams(location.search);
+      current.set("skip", String(merged.skip ?? 0));
+      current.set("limit", String(merged.limit ?? 10));
+      const setOrDelete = (key: string, v?: string) => {
+        if (v && v.length) current.set(key, v);
+        else current.delete(key);
+      };
+      setOrDelete("search", merged.search);
+      setOrDelete("sortBy", merged.sortBy);
+      setOrDelete("sortOrder", merged.sortOrder);
+      setOrDelete("tag", merged.tag);
+      navigate({ search: `?${current.toString()}` }, { replace: false });
+    },
+    [location.search, navigate, value],
+  );
 
-  const updateURL = useCallback(() => {
-    const params = new URLSearchParams();
-    if (skip) params.set("skip", String(skip));
-    if (limit) params.set("limit", String(limit));
-    if (searchQuery) params.set("search", searchQuery);
-    if (sortBy) params.set("sortBy", sortBy);
-    if (sortOrder) params.set("sortOrder", sortOrder);
-    if (selectedTag) params.set("tag", selectedTag);
-    navigate(`?${params.toString()}`);
-  }, [skip, limit, searchQuery, sortBy, sortOrder, selectedTag, navigate]);
-
-  useEffect(() => {
-    setSkip(Number.parseInt(queryParams.get("skip") || "0") || 0);
-    setLimit(Number.parseInt(queryParams.get("limit") || "10") || 10);
-    setSearchQuery(queryParams.get("search") || "");
-    setSortBy((queryParams.get("sortBy") as SortBy) || "none");
-    setSortOrder((queryParams.get("sortOrder") as SortOrder) || "asc");
-    setSelectedTag(queryParams.get("tag") || "");
-  }, [location.search, queryParams, setLimit, setSearchQuery, setSelectedTag, setSkip, setSortBy, setSortOrder]);
-
-  return {
-    skip,
-    limit,
-    searchQuery,
-    sortBy,
-    sortOrder,
-    selectedTag,
-    tags,
-
-    setSkip,
-    setLimit,
-    setSearchQuery,
-    setSortBy,
-    setSortOrder,
-    setSelectedTag,
-    setTags,
-    loadTags,
-
-    updateURL,
-  };
+  return { params: value, setParams: update } as const;
 };

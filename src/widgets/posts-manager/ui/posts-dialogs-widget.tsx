@@ -1,12 +1,12 @@
 import { PostDetailDialog, usePosts } from "@/entities/post";
 import { CommentAddDialogContainer, CommentEditDialogContainer } from "@/features/comment-edit";
 import { PostAddDialogContainer, PostEditDialogContainer } from "@/features/post-edit";
-import { usePostFilter } from "@/features/post-filter";
+import { usePostSearchParams } from "@/features/post-filter/model/filter-post.hook";
 import { UserDetailDialogContainer } from "@/features/user-load";
 
 export function PostsDialogsWidget() {
   const { selectedPost, isDetailOpen, setIsDetailOpen } = usePosts();
-  const { searchQuery } = usePostFilter();
+  const { params } = usePostSearchParams();
 
   return (
     <>
@@ -19,11 +19,10 @@ export function PostsDialogsWidget() {
         open={isDetailOpen}
         onOpenChange={setIsDetailOpen}
         post={selectedPost}
-        searchQuery={searchQuery}
+        searchQuery={params.search ?? ""}
       />
 
       <UserDetailDialogContainer />
     </>
   );
 }
-
