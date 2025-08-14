@@ -12,6 +12,7 @@ import {
   sortByAtom,
   SortOrder,
   sortOrderAtom,
+  tagsAtom,
 } from "./filter-post.atoms";
 
 export const usePostFilter = () => {
@@ -25,6 +26,7 @@ export const usePostFilter = () => {
   const [sortBy, setSortBy] = useAtom(sortByAtom);
   const [sortOrder, setSortOrder] = useAtom(sortOrderAtom);
   const [selectedTag, setSelectedTag] = useAtom(selectedTagAtom);
+  const [tags, setTags] = useAtom(tagsAtom);
 
   const updateURL = useCallback(() => {
     const params = new URLSearchParams();
@@ -53,6 +55,7 @@ export const usePostFilter = () => {
     sortBy,
     sortOrder,
     selectedTag,
+    tags,
 
     setSkip,
     setLimit,
@@ -60,6 +63,7 @@ export const usePostFilter = () => {
     setSortBy,
     setSortOrder,
     setSelectedTag,
+    setTags,
 
     updateURL,
   };
