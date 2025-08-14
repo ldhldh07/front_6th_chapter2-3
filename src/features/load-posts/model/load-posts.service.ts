@@ -1,8 +1,8 @@
 import { postApi, type PostsParams } from "@/entities/post";
-import { getUsersData } from "@/entities/user";
+import { userApi } from "@/entities/user";
 
 export async function getPostsWithAuthors(params: PostsParams) {
-  const [{ posts, total }, users] = await Promise.all([postApi.get(params), getUsersData()]);
+  const [{ posts, total }, users] = await Promise.all([postApi.get(params), userApi.getProfile()]);
   const postsWithUsers = posts.map((post) => ({
     ...post,
     author: users.find((user) => user.id === post.userId),
@@ -11,7 +11,7 @@ export async function getPostsWithAuthors(params: PostsParams) {
 }
 
 export async function getPostsByTagWithAuthors(tag: string) {
-  const [{ posts, total }, users] = await Promise.all([postApi.getByTag(tag), getUsersData()]);
+  const [{ posts, total }, users] = await Promise.all([postApi.getByTag(tag), userApi.getProfile()]);
   const postsWithUsers = posts.map((post) => ({
     ...post,
     author: users.find((user) => user.id === post.userId),

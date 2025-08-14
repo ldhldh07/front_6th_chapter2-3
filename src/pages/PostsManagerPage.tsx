@@ -22,7 +22,6 @@ import type { Post } from "@entities/post";
 import { PostsTableWidget } from "@widgets/post-table";
 
 import { commentApi, useComments } from "@/entities/comment";
-import { useSelectedUser, UserDetailDialog } from "@/entities/user";
 import { CommentAddDialogContainer, CommentEditDialogContainer } from "@/features/edit-comment";
 import {
   PostAddDialogContainer,
@@ -33,6 +32,7 @@ import {
 } from "@/features/edit-post";
 import { usePostFilter } from "@/features/filter-post";
 import { getPostsByTagWithAuthors, getPostsWithAuthors } from "@/features/load-posts";
+import { useUserDetailModal, UserDetailDialogContainer } from "@/features/user-detail-modal";
 
 const PostsManager = () => {
   const {
@@ -70,7 +70,7 @@ const PostsManager = () => {
   const { deletePost } = usePostEditor();
   const { setIsAddOpen: setIsAddPostOpen } = useNewPostForm();
   const { setIsEditOpen: setIsEditPostOpen } = useEditPostDialog();
-  const { selectedUser, isUserModalOpen, setIsUserModalOpen, setSelectedUser } = useSelectedUser();
+  const { openById: openUserModal } = useUserDetailModal();
 
   const fetchPosts = async () => {
     setIsLoading(true);
@@ -113,7 +113,7 @@ const PostsManager = () => {
   };
 
   // 태그별 게시물 가져오기
-  const fetchPostsByTag = async (tag) => {
+  const fetchPostsByTag = async (tag: string) => {
     if (!tag || tag === "all") {
       fetchPosts();
       return;
@@ -140,22 +140,15 @@ const PostsManager = () => {
   };
 
   // 게시물 상세 보기
-  const openPostDetail = (post) => {
+  const openPostDetail = (post: Post) => {
     setSelectedPost(post);
     fetchComments(post.id);
     setIsDetailPostOpen(true);
   };
 
-  // 사용자 모달 열기
-  const openUserModal = async (user) => {
-    try {
-      const response = await fetch(`/api/users/${user.id}`);
-      const userData = await response.json();
-      setSelectedUser(userData);
-      setIsUserModalOpen(true);
-    } catch (error) {
-      console.error("사용자 정보 가져오기 오류:", error);
-    }
+  const handleOpenUserModal = (user: { id: number } | undefined) => {
+    if (!user) return;
+    void openUserModal(user.id);
   };
 
   useEffect(() => {
@@ -236,7 +229,7 @@ const PostsManager = () => {
                 ))}
               </SelectContent>
             </Select>
-            <Select value={sortBy} onValueChange={setSortBy}>
+            <Select value={sortBy} onValueChange={(v) => setSortBy(v as "none" | "id" | "title" | "reactions")}>
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="정렬 기준" />
               </SelectTrigger>
@@ -247,7 +240,7 @@ const PostsManager = () => {
                 <SelectItem value="reactions">반응</SelectItem>
               </SelectContent>
             </Select>
-            <Select value={sortOrder} onValueChange={setSortOrder}>
+            <Select value={sortOrder} onValueChange={(v) => setSortOrder(v as "asc" | "desc")}>
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="정렬 순서" />
               </SelectTrigger>
@@ -267,7 +260,7 @@ const PostsManager = () => {
               selectedTag={selectedTag}
               makeTitleSegments={(title) => splitByHighlight(title, searchQuery)}
               onClickTag={handleSelectTag}
-              onOpenUser={openUserModal}
+              onOpenUser={handleOpenUserModal}
               onOpenDetail={openPostDetail}
               onEdit={handleEditPost}
               onDelete={deletePost}
@@ -322,7 +315,7 @@ const PostsManager = () => {
         searchQuery={searchQuery}
       />
 
-      <UserDetailDialog open={isUserModalOpen} onOpenChange={setIsUserModalOpen} user={selectedUser} />
+      <UserDetailDialogContainer />
     </Card>
   );
 };
