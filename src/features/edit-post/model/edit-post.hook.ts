@@ -2,9 +2,7 @@ import { useState } from "react";
 
 import { usePosts } from "@entities/post";
 
-import { createPost, type CreatePostParams } from "../api/create-post.api";
-import { deletePostRequest } from "../api/delete-post.api";
-import { updatePost as updatePostRequest, type UpdatePostPayload } from "../api/update-post.api";
+import { postApi, type CreatePostParams, type UpdatePostPayload } from "@/entities/post";
 
 export function usePostEditor() {
   const { posts, appendPost, changePost, removePost } = usePosts();
@@ -13,7 +11,7 @@ export function usePostEditor() {
   const addPost = async (payload: CreatePostParams) => {
     setIsSubmitting(true);
     try {
-      const createdPost = await createPost(payload);
+      const createdPost = await postApi.create(payload);
       appendPost(createdPost);
     } catch (error) {
       if (error instanceof Error) throw error;
@@ -27,7 +25,7 @@ export function usePostEditor() {
     setIsSubmitting(true);
     const prev = posts.find((post) => post.id === Number(payload.postId));
     try {
-      const updated = await updatePostRequest(payload);
+      const updated = await postApi.update(payload);
       changePost({
         ...updated,
         author: prev?.author,
@@ -43,7 +41,7 @@ export function usePostEditor() {
   const deletePost = async (id: number) => {
     setIsSubmitting(true);
     try {
-      await deletePostRequest(id);
+      await postApi.remove(id);
       removePost(id);
     } catch (error) {
       if (error instanceof Error) throw error;
