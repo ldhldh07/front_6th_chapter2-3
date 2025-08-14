@@ -9,7 +9,6 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-  Textarea,
   Select,
   SelectContent,
   SelectItem,
@@ -27,16 +26,15 @@ import type { Post } from "@entities/post";
 
 import { PostsTableWidget } from "@widgets/post-table";
 
-import { CommentList, commentApi } from "@/entities/comment";
+import { CommentList, commentApi, useComments } from "@/entities/comment";
 import type { Comment } from "@/entities/comment";
-import { useComments } from "@/entities/comment/model/comment.hook";
 import {
   CommentAddDialogContainer,
   CommentEditDialogContainer,
+  useCommentEditor,
   useEditCommentDialog,
   useNewCommentForm,
 } from "@/features/edit-comment";
-import { useCommentEditor } from "@/features/edit-comment/model/edit-comment.hook";
 import {
   PostAddDialogContainer,
   PostEditDialogContainer,
@@ -44,7 +42,7 @@ import {
   useNewPostForm,
   usePostEditor,
 } from "@/features/edit-post";
-import { usePostFilter } from "@/features/filter-post/model/filter-post.hook";
+import { usePostFilter } from "@/features/filter-post";
 import { getPostsByTagWithAuthors, getPostsWithAuthors } from "@/features/load-posts";
 
 const PostsManager = () => {
