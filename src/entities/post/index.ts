@@ -7,5 +7,9 @@ export { usePosts } from "./model/post.hook";
 
 export { postApi } from "./api/posts.api";
 
+export { PostAddDialog } from "./ui/post-add-dialog";
+
+export { PostEditDialog } from "./ui/post-edit-dialog";
+
 export { PostsTable } from "./ui/posts-table";
 export type { PostsTableProps } from "./ui/posts-table";

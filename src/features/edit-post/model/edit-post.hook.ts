@@ -1,10 +1,24 @@
+import { useAtom } from "jotai";
 import { useState } from "react";
 
 import { usePosts } from "@entities/post";
 
 import { postApi, type CreatePostParams, type UpdatePostPayload } from "@/entities/post";
 
-export function usePostEditor() {
+import { isAddPostDialogOpenAtom, isEditPostDialogOpenAtom, newPostAtom } from "./edit-post.atoms";
+
+export const useNewPostForm = () => {
+  const [newPost, setNewPost] = useAtom(newPostAtom);
+  const [isAddOpen, setIsAddOpen] = useAtom(isAddPostDialogOpenAtom);
+  return { newPost, setNewPost, isAddOpen, setIsAddOpen } as const;
+};
+
+export const useEditPostDialog = () => {
+  const [isEditOpen, setIsEditOpen] = useAtom(isEditPostDialogOpenAtom);
+  return { isEditOpen, setIsEditOpen } as const;
+};
+
+export const usePostEditor = () => {
   const { posts, appendPost, changePost, removePost } = usePosts();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -52,4 +66,4 @@ export function usePostEditor() {
   };
 
   return { addPost, updatePost, deletePost, isSubmitting };
-}
+};
