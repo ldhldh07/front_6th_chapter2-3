@@ -1,8 +1,7 @@
-import { JSX } from "react";
-
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@shared/ui/dialog";
 import { HighlightText } from "@shared/ui/highlight-text";
 
+import { CommentsListContainer } from "@/features/edit-comment";
 import { splitByHighlight } from "@/shared/lib/split-by-highlight";
 
 import type { Post } from "../model/post.types";
@@ -12,16 +11,9 @@ export interface PostDetailDialogProps {
   onOpenChange: (open: boolean) => void;
   post: Post | null;
   searchQuery: string;
-  renderComments: (postId: number) => JSX.Element;
 }
 
-export function PostDetailDialog({
-  open,
-  onOpenChange,
-  post,
-  searchQuery,
-  renderComments,
-}: Readonly<PostDetailDialogProps>) {
+export function PostDetailDialog({ open, onOpenChange, post, searchQuery }: Readonly<PostDetailDialogProps>) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl">
@@ -34,7 +26,7 @@ export function PostDetailDialog({
           <p>
             <HighlightText segments={splitByHighlight(post?.body ?? "", searchQuery) ?? []} />
           </p>
-          {post?.id != null && renderComments(post.id)}
+          {post?.id != null && <CommentsListContainer postId={post.id} searchQuery={searchQuery} />}
         </div>
       </DialogContent>
     </Dialog>

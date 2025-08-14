@@ -19,22 +19,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@shared/ui";
-import { HighlightText } from "@shared/ui/highlight-text";
 
 import { postApi, PostDetailDialog, usePosts } from "@entities/post";
 import type { Post } from "@entities/post";
 
 import { PostsTableWidget } from "@widgets/post-table";
 
-import { CommentList, commentApi, useComments } from "@/entities/comment";
-import type { Comment } from "@/entities/comment";
-import {
-  CommentAddDialogContainer,
-  CommentEditDialogContainer,
-  useCommentEditor,
-  useEditCommentDialog,
-  useNewCommentForm,
-} from "@/features/edit-comment";
+import { commentApi, useComments } from "@/entities/comment";
+import { CommentAddDialogContainer, CommentEditDialogContainer } from "@/features/edit-comment";
 import {
   PostAddDialogContainer,
   PostEditDialogContainer,
@@ -77,14 +69,11 @@ const PostsManager = () => {
 
     updateURL,
   } = usePostFilter();
-  const { comments, setComments, setSelectedComment } = useComments();
+  const { comments, setComments } = useComments();
   const { deletePost } = usePostEditor();
   const { setIsAddOpen: setIsAddPostOpen } = useNewPostForm();
   const { setIsEditOpen: setIsEditPostOpen } = useEditPostDialog();
-  const { deleteComment, likeComment } = useCommentEditor();
   const [showUserModal, setShowUserModal] = useState(false);
-  const { setNewComment, setIsAddOpen: setIsAddCommentOpen } = useNewCommentForm();
-  const { setIsEditOpen: setIsEditCommentOpen } = useEditCommentDialog();
   const [selectedUser, setSelectedUser] = useState(null);
 
   const fetchPosts = async () => {
@@ -154,25 +143,6 @@ const PostsManager = () => {
     }
   };
 
-  // 댓글 삭제
-  const handleDeleteComment = async (id: number, postId: number) => {
-    try {
-      await deleteComment(id, postId);
-      setComments((prev) => ({ ...prev, [postId]: prev[postId].filter((c) => c.id !== id) }));
-    } catch (error) {
-      console.error("댓글 삭제 오류:", error);
-    }
-  };
-
-  // 댓글 좋아요
-  const handleLikeComment = async (id: number, postId: number) => {
-    try {
-      await likeComment(id, postId);
-    } catch (error) {
-      console.error("댓글 좋아요 오류:", error);
-    }
-  };
-
   // 게시물 상세 보기
   const openPostDetail = (post) => {
     setSelectedPost(post);
@@ -213,38 +183,14 @@ const PostsManager = () => {
     [setSelectedPost, setIsEditPostOpen],
   );
 
-  const handleEditComment = useCallback(
-    (newComment: Comment) => {
-      setSelectedComment(newComment);
-      setIsEditCommentOpen(true);
+  const handleSelectTag = useCallback(
+    (tag: string) => {
+      {
+        setSelectedTag(tag);
+        updateURL();
+      }
     },
-    [setSelectedComment, setIsEditCommentOpen],
-  );
-
-  // 댓글 렌더링
-  const renderComments = (postId) => (
-    <div className="mt-2">
-      <div className="flex items-center justify-between mb-2">
-        <h3 className="text-sm font-semibold">댓글</h3>
-        <Button
-          size="sm"
-          onClick={() => {
-            setNewComment((prev) => ({ ...prev, postId }));
-            setIsAddCommentOpen(true);
-          }}
-        >
-          <Plus className="w-3 h-3 mr-1" />
-          댓글 추가
-        </Button>
-      </div>
-      <CommentList
-        comments={comments[postId]}
-        searchQuery={searchQuery}
-        onLike={(id) => selectedPost && handleLikeComment(id, selectedPost.id)}
-        onEdit={handleEditComment}
-        onDelete={(id) => selectedPost && handleDeleteComment(id, selectedPost.id)}
-      />
-    </div>
+    [setSelectedTag, updateURL],
   );
 
   return (
@@ -324,10 +270,7 @@ const PostsManager = () => {
               posts={posts}
               selectedTag={selectedTag}
               makeTitleSegments={(title) => splitByHighlight(title, searchQuery)}
-              onClickTag={(tag) => {
-                setSelectedTag(tag);
-                updateURL();
-              }}
+              onClickTag={handleSelectTag}
               onOpenUser={openUserModal}
               onOpenDetail={openPostDetail}
               onEdit={handleEditPost}
@@ -381,7 +324,6 @@ const PostsManager = () => {
         onOpenChange={setIsDetailPostOpen}
         post={selectedPost}
         searchQuery={searchQuery}
-        renderComments={renderComments}
       />
 
       {/* 사용자 모달 */}
