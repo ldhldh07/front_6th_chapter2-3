@@ -1,7 +1,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@shared/ui/dialog";
 import { HighlightText } from "@shared/ui/highlight-text";
 
-import { CommentsListContainer } from "@/features/edit-comment";
+import { CommentsListContainer } from "@/features/comment-edit";
 import { splitByHighlight } from "@/shared/lib/split-by-highlight";
 
 import type { Post } from "../model/post.types";

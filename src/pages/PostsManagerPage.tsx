@@ -17,12 +17,11 @@ import {
 
 import { postApi, PostDetailDialog, usePosts } from "@entities/post";
 
-import { CommentAddDialogContainer, CommentEditDialogContainer } from "@/features/edit-comment";
-import { PostAddDialogContainer, PostEditDialogContainer, useNewPostForm } from "@/features/edit-post";
-import { usePostFilter } from "@/features/filter-post";
-import { getPostsByTagWithAuthors, getPostsWithAuthors } from "@/features/load-posts";
-import { PostsTableContainer } from "@/features/posts-table";
-import { UserDetailDialogContainer } from "@/features/user-detail-modal";
+import { CommentAddDialogContainer, CommentEditDialogContainer } from "@/features/comment-edit";
+import { PostAddDialogContainer, PostEditDialogContainer, useNewPostForm } from "@/features/post-edit";
+import { usePostFilter } from "@/features/post-filter";
+import { getPostsByTagWithAuthors, PostsTableContainer, getPostsWithAuthors } from "@/features/post-load";
+import { UserDetailDialogContainer } from "@/features/user-load";
 
 const PostsManager = () => {
   const {

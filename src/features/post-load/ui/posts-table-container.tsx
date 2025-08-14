@@ -3,9 +3,9 @@ import { useCallback } from "react";
 import { useComments, commentApi } from "@/entities/comment";
 import { PostsTable, usePosts } from "@/entities/post";
 import type { Post } from "@/entities/post";
-import { useEditPostDialog, usePostEditor } from "@/features/edit-post";
-import { usePostFilter } from "@/features/filter-post";
-import { useUserDetailModal } from "@/features/user-detail-modal";
+import { useEditPostDialog, usePostEditor } from "@/features/post-edit";
+import { usePostFilter } from "@/features/post-filter";
+import { useUserDetailModal } from "@/features/user-load";
 import { splitByHighlight } from "@/shared/lib/split-by-highlight";
 
 export function PostsTableContainer() {
