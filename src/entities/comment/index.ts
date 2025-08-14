@@ -10,3 +10,4 @@ export { useComments } from "./model/comment.hook";
 
 export type { CommentUser, Comment, CommentsByPostId } from "./model/comment.types";
 export { CommentList } from "./ui/comment-list";
+export { CommentAddDialog, CommentEditDialog } from "./ui";

@@ -27,7 +27,7 @@ import type { Post } from "@entities/post";
 
 import { PostsTableWidget } from "@widgets/post-table";
 
-import { CommentList, commentApi } from "@/entities/comment";
+import { CommentAddDialog, CommentEditDialog, CommentList, commentApi } from "@/entities/comment";
 import type { Comment } from "@/entities/comment";
 import { useComments } from "@/entities/comment/model/comment.hook";
 import { useEditCommentDialog, useNewCommentForm } from "@/features/edit-comment";
@@ -385,38 +385,22 @@ const PostsManager = () => {
       <PostEditDialogContainer />
 
       {/* 댓글 추가 대화상자 */}
-      <Dialog open={isAddCommentOpen} onOpenChange={setIsAddCommentOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>새 댓글 추가</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <Textarea
-              placeholder="댓글 내용"
-              value={newComment.body}
-              onChange={(e) => setNewComment({ ...newComment, body: e.target.value })}
-            />
-            <Button onClick={handleAddComment}>댓글 추가</Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <CommentAddDialog
+        open={isAddCommentOpen}
+        onOpenChange={setIsAddCommentOpen}
+        body={newComment.body}
+        onChange={(e) => setNewComment({ ...newComment, body: e.target.value })}
+        onSubmit={handleAddComment}
+      />
 
       {/* 댓글 수정 대화상자 */}
-      <Dialog open={isEditCommentOpen} onOpenChange={setIsEditCommentOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>댓글 수정</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <Textarea
-              placeholder="댓글 내용"
-              value={selectedComment?.body || ""}
-              onChange={(e) => setSelectedComment({ ...selectedComment, body: e.target.value })}
-            />
-            <Button onClick={handleUpdateComment}>댓글 업데이트</Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <CommentEditDialog
+        open={isEditCommentOpen}
+        onOpenChange={setIsEditCommentOpen}
+        comment={selectedComment}
+        onChange={(e) => setSelectedComment((prev) => (prev ? { ...prev, body: e.currentTarget.value } : prev))}
+        onSubmit={handleUpdateComment}
+      />
 
       {/* 게시물 상세 보기 대화상자 */}
       <Dialog open={showPostDetailDialog} onOpenChange={setShowPostDetailDialog}>
