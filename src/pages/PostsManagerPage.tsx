@@ -1,5 +1,4 @@
 import { Plus } from "lucide-react";
-import { useEffect } from "react";
 
 import {
   Button,
@@ -14,13 +13,14 @@ import {
   SelectValue,
 } from "@shared/ui";
 
-import { postApi, PostDetailDialog, usePosts } from "@entities/post";
+import { PostDetailDialog, usePosts } from "@entities/post";
 
 import { CommentAddDialogContainer, CommentEditDialogContainer } from "@/features/comment-edit";
 import { PostAddDialogContainer, PostEditDialogContainer, useNewPostForm } from "@/features/post-edit";
 import { usePostFilter } from "@/features/post-filter";
 import { PostFilterContainer } from "@/features/post-filter/ui/post-filter-container";
-import { getPostsByTagWithAuthors, PostsTableContainer, getPostsWithAuthors } from "@/features/post-load";
+import { PostsTableContainer } from "@/features/post-load";
+import { useLoadPost, useSetFilter } from "@/features/post-load/model/post-load.hook";
 import { UserDetailDialogContainer } from "@/features/user-load";
 
 const PostsManager = () => {
@@ -28,80 +28,15 @@ const PostsManager = () => {
     total,
     isLoading,
     selectedPost,
-    setPosts,
-    setTotal,
-    setIsLoading,
     isDetailOpen: isDetailPostOpen,
     setIsDetailOpen: setIsDetailPostOpen,
   } = usePosts();
-  const {
-    skip,
-    limit,
-    searchQuery,
-    sortBy,
-    sortOrder,
-    selectedTag,
-
-    setSkip,
-    setLimit,
-    setTags,
-
-    updateURL,
-  } = usePostFilter();
+  const { skip, limit, searchQuery, selectedTag, setSkip, setLimit, loadTags, updateURL } = usePostFilter();
+  const { getPosts, getPostsByTag } = useLoadPost();
   const { setIsAddOpen: setIsAddPostOpen } = useNewPostForm();
 
-  const fetchPosts = async () => {
-    setIsLoading(true);
-    try {
-      const { posts, total } = await getPostsWithAuthors({ limit, skip });
-      setPosts(posts);
-      setTotal(total);
-    } catch (error) {
-      console.error("게시물 가져오기 오류:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  useSetFilter({ skip, limit, selectedTag, loadTags, updateURL, getPosts, getPostsByTag });
 
-  // 태그 가져오기
-  const fetchTags = async () => {
-    try {
-      const data = await postApi.getTags();
-      setTags(data);
-    } catch (error) {
-      console.error("태그 가져오기 오류:", error);
-    }
-  };
-
-  // 태그별 게시물 가져오기
-  const fetchPostsByTag = async (tag: string) => {
-    if (!tag || tag === "all") {
-      fetchPosts();
-      return;
-    }
-    setIsLoading(true);
-    try {
-      const { posts, total } = await getPostsByTagWithAuthors(tag);
-      setPosts(posts);
-      setTotal(total);
-    } catch (error) {
-      console.error("태그별 게시물 가져오기 오류:", error);
-    }
-    setIsLoading(false);
-  };
-
-  useEffect(() => {
-    fetchTags();
-  }, []);
-
-  useEffect(() => {
-    if (selectedTag) {
-      fetchPostsByTag(selectedTag);
-    } else {
-      fetchPosts();
-    }
-    updateURL();
-  }, [skip, limit, sortBy, sortOrder, selectedTag]);
   return (
     <Card className="w-full max-w-6xl mx-auto">
       <CardHeader>

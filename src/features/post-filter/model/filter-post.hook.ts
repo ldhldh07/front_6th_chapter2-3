@@ -3,6 +3,8 @@ import { useAtom } from "jotai";
 import { useCallback, useEffect, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
+import { postApi } from "@/entities/post";
+
 import {
   limitAtom,
   searchQueryAtom,
@@ -27,6 +29,15 @@ export const usePostFilter = () => {
   const [sortOrder, setSortOrder] = useAtom(sortOrderAtom);
   const [selectedTag, setSelectedTag] = useAtom(selectedTagAtom);
   const [tags, setTags] = useAtom(tagsAtom);
+
+  const loadTags = useCallback(async () => {
+    try {
+      const data = await postApi.getTags();
+      setTags(data);
+    } catch (error) {
+      console.error("태그 가져오기 오류:", error);
+    }
+  }, [setTags]);
 
   const updateURL = useCallback(() => {
     const params = new URLSearchParams();
@@ -64,6 +75,7 @@ export const usePostFilter = () => {
     setSortOrder,
     setSelectedTag,
     setTags,
+    loadTags,
 
     updateURL,
   };
