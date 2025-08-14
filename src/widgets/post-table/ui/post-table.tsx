@@ -16,7 +16,7 @@ export function PostsTableWidget({
       selectedTag={selectedTag}
       makeTitleSegments={makeTitleSegments}
       onClickTag={onClickTag}
-      onOpenUser={onOpenUser}
+      onOpenUser={(user) => onOpenUser?.(user)}
       onOpenDetail={onOpenDetail}
       onEdit={onEdit}
       onDelete={onDelete}
