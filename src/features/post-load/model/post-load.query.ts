@@ -23,7 +23,7 @@ export const postsByTagQuery = (tag: string, params?: Pick<PostsParams, "limit" 
 
 export const postsSearchQuery = (query: string, params?: Pick<PostsParams, "limit" | "skip" | "sortBy" | "order">) => ({
   queryKey: postsQueryKeys.search(query, params),
-  queryFn: (): Promise<PostsResponse> => postApi.search(query, params),
+  queryFn: (): Promise<PostsResponse> => postLoadApi.searchWithAuthors(query, params),
 });
 
 export type BuildPostsQueryParams = {

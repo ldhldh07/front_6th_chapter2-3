@@ -22,6 +22,17 @@ export const postLoadApi = {
     }));
     return { posts: sortPosts(postsWithUsers, params?.sortBy, params?.order), total };
   },
+  async searchWithAuthors(
+    query: string,
+    params?: Pick<PostsParams, "limit" | "skip" | "sortBy" | "order">
+  ): Promise<PostsResponse> {
+    const [{ posts, total }, users] = await Promise.all([postApi.search(query, params), userApi.getProfile()]);
+    const postsWithUsers: Post[] = posts.map((post) => ({
+      ...post,
+      author: users.find((user) => user.id === post.userId),
+    }));
+    return { posts: sortPosts(postsWithUsers, params?.sortBy, params?.order), total };
+  },
 } as const;
 
 function sortPosts(posts: Post[], sortBy?: string, order: "asc" | "desc" = "asc"): Post[] {
