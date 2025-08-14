@@ -21,7 +21,7 @@ import {
 } from "@shared/ui";
 import { HighlightText } from "@shared/ui/highlight-text";
 
-import { postApi, usePosts } from "@entities/post";
+import { postApi, PostDetailDialog, usePosts } from "@entities/post";
 import type { Post } from "@entities/post";
 
 import { PostsTableWidget } from "@widgets/post-table";
@@ -46,7 +46,18 @@ import { usePostFilter } from "@/features/filter-post";
 import { getPostsByTagWithAuthors, getPostsWithAuthors } from "@/features/load-posts";
 
 const PostsManager = () => {
-  const { posts, total, isLoading, selectedPost, setPosts, setTotal, setIsLoading, setSelectedPost } = usePosts();
+  const {
+    posts,
+    total,
+    isLoading,
+    selectedPost,
+    setPosts,
+    setTotal,
+    setIsLoading,
+    setSelectedPost,
+    isDetailOpen: isDetailPostOpen,
+    setIsDetailOpen: setIsDetailPostOpen,
+  } = usePosts();
   const {
     skip,
     limit,
@@ -71,7 +82,6 @@ const PostsManager = () => {
   const { setIsAddOpen: setIsAddPostOpen } = useNewPostForm();
   const { setIsEditOpen: setIsEditPostOpen } = useEditPostDialog();
   const { deleteComment, likeComment } = useCommentEditor();
-  const [showPostDetailDialog, setShowPostDetailDialog] = useState(false);
   const [showUserModal, setShowUserModal] = useState(false);
   const { setNewComment, setIsAddOpen: setIsAddCommentOpen } = useNewCommentForm();
   const { setIsEditOpen: setIsEditCommentOpen } = useEditCommentDialog();
@@ -167,7 +177,7 @@ const PostsManager = () => {
   const openPostDetail = (post) => {
     setSelectedPost(post);
     fetchComments(post.id);
-    setShowPostDetailDialog(true);
+    setIsDetailPostOpen(true);
   };
 
   // 사용자 모달 열기
@@ -366,21 +376,13 @@ const PostsManager = () => {
       <CommentEditDialogContainer />
 
       {/* 게시물 상세 보기 대화상자 */}
-      <Dialog open={showPostDetailDialog} onOpenChange={setShowPostDetailDialog}>
-        <DialogContent className="max-w-3xl">
-          <DialogHeader>
-            <DialogTitle>
-              <HighlightText segments={splitByHighlight(selectedPost?.title ?? "", searchQuery)} />
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <p>
-              <HighlightText segments={splitByHighlight(selectedPost?.body ?? "", searchQuery)} />
-            </p>
-            {renderComments(selectedPost?.id)}
-          </div>
-        </DialogContent>
-      </Dialog>
+      <PostDetailDialog
+        open={isDetailPostOpen}
+        onOpenChange={setIsDetailPostOpen}
+        post={selectedPost}
+        searchQuery={searchQuery}
+        renderComments={renderComments}
+      />
 
       {/* 사용자 모달 */}
       <Dialog open={showUserModal} onOpenChange={setShowUserModal}>

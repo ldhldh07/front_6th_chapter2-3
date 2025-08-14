@@ -7,3 +7,4 @@ export const totalPostAtom = atom<number>(0);
 export const isPostsLoadingAtom = atom<boolean>(false);
 
 export const selectedPostAtom = atom<Post | null>(null);
+export const isPostDetailDialogOpenAtom = atom<boolean>(false);
