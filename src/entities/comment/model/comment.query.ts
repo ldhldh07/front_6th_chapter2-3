@@ -114,16 +114,23 @@ export function useLikeCommentMutation() {
     onMutate: async ({ id, postId, likes }: { id: number; postId: number; likes: number }) => {
       const key = commentQueryKeys.byPost(postId);
       const prev = queryClient.getQueryData<Comment[]>(key);
+      const previousLikes = (prev ?? []).find((c) => c.id === id)?.likes ?? 0;
       queryClient.setQueryData<Comment[]>(
         key,
         (prev ?? []).map((c) => (c.id === id ? { ...c, likes } : c)),
       );
-      return { key, prev } as const;
+      return { key, prev, id, optimisticLikes: likes, previousLikes } as const;
     },
     onError: (_error, _variables, context) => context && queryClient.setQueryData(context.key, context.prev),
-    onSuccess: (updated) => {
-      const key = commentQueryKeys.byPost(updated.postId);
-      queryClient.setQueryData<Comment[]>(key, (prev) => (prev ?? []).map((c) => (c.id === updated.id ? updated : c)));
+    onSuccess: (updated, _variables, context) => {
+      if (!context) return;
+      queryClient.setQueryData<Comment[]>(context.key, (prev) =>
+        (prev ?? []).map((c) =>
+          c.id === updated.id
+            ? { ...c, likes: Math.max(context.optimisticLikes, updated.likes ?? context.previousLikes) }
+            : c,
+        ),
+      );
     },
   });
 }

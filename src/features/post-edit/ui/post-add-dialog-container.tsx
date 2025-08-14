@@ -7,8 +7,11 @@ export function PostAddDialogContainer() {
   const { addPost } = usePostEditor();
 
   const handleSubmit = async () => {
-    await addPost(newPost);
-    setIsAddOpen(false);
+    try {
+      await addPost(newPost);
+    } finally {
+      setIsAddOpen(false);
+    }
     setNewPost({ title: "", body: "", userId: newPost.userId });
   };
 
