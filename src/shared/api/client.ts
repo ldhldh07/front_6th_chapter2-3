@@ -1,4 +1,4 @@
-const BASE_URL = window.location.origin + "/api";
+import { BASE_URL } from "@/shared/lib/env";
 
 type Query = Record<string, string | number | boolean | string[] | undefined>;
 
